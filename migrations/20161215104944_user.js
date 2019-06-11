@@ -6,6 +6,9 @@ exports.up = function(knex, Promise) {
     table.text('password').notNullable();
     table.datetime('date').notNullable();
     table.boolean('is_active').notNullable().defaultTo(true);
+    table.integer('role').notNullable().defaultTo(0);
+    table.text('location');
+    table.text('instructions_default');
   });
 };
 
