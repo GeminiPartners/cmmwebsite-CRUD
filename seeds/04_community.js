@@ -4,11 +4,13 @@ exports.seed = (knex, Promise) => {
         const communities = [{
           name: 'Fellowship X',
           description: 'A church community',
-          community_type: 0
+          community_type: 0,
+          created_at: new Date()
         }, {
           name: 'Neighborhood Y',
           description: 'A neighborhood community',
-          community_type: 1
+          community_type: 1,
+          created_at: new Date()
         }];
 
         return knex('community').insert(communities);

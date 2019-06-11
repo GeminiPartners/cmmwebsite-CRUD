@@ -3,10 +3,11 @@ exports.up = function(knex, Promise) {
   return knex.schema.createTable('user', table => {
     table.increments();
     table.text('email').unique().notNullable();
+    table.text('username').notNullable();
     table.text('password').notNullable();
-    table.datetime('date').notNullable();
+    table.datetime('created_at').notNullable();
+    table.datetime('updated_at').notNullable().defaultTo(knex.fn.now(6));
     table.boolean('is_active').notNullable().defaultTo(true);
-    table.integer('role').notNullable().defaultTo(0);
     table.text('location');
     table.text('instructions_default');
   });

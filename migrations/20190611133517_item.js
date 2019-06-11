@@ -7,6 +7,8 @@ exports.up = function(knex, Promise) {
         table.boolean('default_instructions_suppress').notNullable().defaultTo(false);
         table.text('instructions');
         table.integer('user_id').references('user.id').unsigned().onDelete('cascade');
+        table.datetime('created_at').notNullable();
+        table.datetime('updated_at').notNullable().defaultTo(knex.fn.now(6));
       });
 };
 

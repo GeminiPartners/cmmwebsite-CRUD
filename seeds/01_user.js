@@ -5,6 +5,7 @@ exports.seed = (knex, Promise) => {
           {
             id: 1,
             email: 'berto.ort@gmail.com',
+            username: 'berto',
             password: 'pineapple',
             location: 'Gastonia',
             created_at: new Date()
@@ -12,6 +13,7 @@ exports.seed = (knex, Promise) => {
           {
             id: 2,
             email: 'hello@cjr.co.de',
+            username: 'helen',
             password: 'keyboard_cat',
             location: 'Raleigh',
             created_at: new Date()

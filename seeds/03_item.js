@@ -5,18 +5,21 @@ exports.seed = (knex, Promise) => {
           name: 'snow shovel',
           description: 'A good snow shovel',
           instructions: 'It is out by the shed; pick it up any time',
-          user_id: 2
+          user_id: 2,
+          created_at: new Date()
         }, {
           name: 'Power Washer',
           description: 'Black and decker power washer',
           default_instructions_suppress: true,
           instructions: 'I need to show you how to use it; set up time for that.',
-          user_id: 2
+          user_id: 2,
+          created_at: new Date()
         }, {
           name: 'Canoe',
           description: 'Three man canoe',
           instructions: 'Must have swimmer certification to use',
-          user_id: 1
+          user_id: 1,
+          created_at: new Date()
         }];
 
         return knex('item').insert(items);

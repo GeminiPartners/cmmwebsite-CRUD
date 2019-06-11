@@ -31,7 +31,7 @@ app.use(cors({
 
 app.use('/auth', auth);
 app.use('/', index);
-app.use('/user', authMiddleware.ensureLoggedIn, user);
+app.use('/user', user); // authMiddleware.ensureLoggedIn,
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
