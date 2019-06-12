@@ -3,11 +3,11 @@ const router = express.Router();
 const User = require('../db/user');
 const Sticker = require('../db/sticker');
 const Item = require('../db/item');
+const Shared = require('../shared');
 
 router.get('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
-    res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
-    res.set('Access-Control-Allow-Credentials', 'true');
+    Shared.allowOrigin(res);
     User.getOne(req.params.id).then(user => {
       if (user) {
         delete user.password;
@@ -23,9 +23,7 @@ router.get('/:id', (req, res) => {
 
 router.get('/:id/sticker', (req,res)=>{
   if (!isNaN(req.params.id)) {
-    res.set('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin');
-    res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
-    res.set('Access-Control-Allow-Credentials', 'true');
+    Shared.allowOrigin(res);
     Sticker.getByUser(req.params.id).then(stickers => {
       res.json(stickers);
     });
@@ -36,9 +34,7 @@ router.get('/:id/sticker', (req,res)=>{
 
 router.get('/:id/item', (req,res)=>{
   if (!isNaN(req.params.id)) {
-    res.set('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin');
-    res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
-    res.set('Access-Control-Allow-Credentials', 'true');
+    Shared.allowOrigin(res);
     Item.getByUser(req.params.id).then(items => {
       res.json(items);
     });
