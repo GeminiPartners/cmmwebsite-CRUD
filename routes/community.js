@@ -2,17 +2,17 @@ const express = require('express');
 const router = express.Router();
 const User = require('../db/user');
 const Sticker = require('../db/sticker');
-const Item = require('../db/item');
+const Community = require('../db/community');
 const Shared = require('../shared');
 
 router.get('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
     Shared.allowOrigin(res);
-    Item.getOne(req.params.id).then(item => {
-      if (item) {
-        res.json(item);
+    Community.getOne(req.params.id).then(community => {
+      if (community) {
+        res.json(community);
       } else {
-        resError(res, 404, "Item Not Found");
+        resError(res, 404, "Community Not Found");
       }
     });
   } else {
@@ -20,61 +20,56 @@ router.get('/:id', (req, res) => {
   }
 });
 
-function validItem(item) {
-    const validName = item.name.trim() != '';
-    const validDescription = item.description.trim() != ''; 
+function validCommunity(community) {
+    const validName = community.name.trim() != '';
+    const validDescription = community.description.trim() != ''; 
     return validName && validDescription
 }
 
 router.post('/create', (req, res, next) => {
-    if(validItem(req.body)) {
+    if(validCommunity(req.body)) {
         Shared.allowOrigin(res);
-        const item = {
+        const community = {
             name: req.body.name,
             description: req.body.description,
-            instructions: req.body.instructions,
-            default_instructions_suppress: req.body.default_instructions_suppress,
-            instructions: req.body.instructions,
-            user_id: req.body.user_id,
+            community_type: req.body.community_type,
             created_at: new Date()
         };
 
-        Item
-            .create(item)
+        Community
+            .create(community)
             .then(id => {
                 res.json({
                     id,
-                    message: 'item posted'
+                    message: 'community posted'
                     });
         });
         // redirect
         } else {
-            next(new Error('Invalid item'))
+            next(new Error('Invalid community'))
         }
         });
 
 router.patch('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
       Shared.allowOrigin(res);
-      Item.getOneToUpdate(req.params.id, req.body.user_id).then(item => {
-      if (item) {
-          const item = {
-              id: req.params.id,
-              name: req.body.name,
-              description: req.body.description,
-              instructions: req.body.instructions,
-              default_instructions_suppress: req.body.default_instructions_suppress,
-              user_id: req.body.user_id
+      Community.getOneToUpdate(req.params.id, req.body.user_id).then(community => {
+      if (community) {
+          const community = {
+            id: req.params.id,
+            name: req.body.name,
+            description: req.body.description,
+            community_type: req.body.community_type,
           };
-          Item
-              .update(item)
+          Community
+              .update(community)
               .then(id => {
                   res.json({
-                      message: 'item updated'
+                      message: 'community updated'
                       });
           }); //can probably simplify this function; don't need the id
       } else {
-          resError(res, 404, "Item Not Found");
+          resError(res, 404, "Community Not Found");
       }
       });
   } else {
@@ -85,15 +80,15 @@ router.patch('/:id', (req, res) => {
 router.post('/delete/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
       Shared.allowOrigin(res);
-      Item.getOneToUpdate(req.params.id, req.body.user_id).then(item => {
-      if (item) {
-          Item.delete(req.params.id, req.body.user_id).then(id => {
+      Community.getOneToUpdate(req.params.id).then(community => {
+      if (community) {
+          Community.delete(req.params.id).then(id => {
             res.json({
-                message: 'item deleted'
+                message: 'community deleted'
                 });
               });
       } else {
-          resError(res, 404, "Item Not Found");
+          resError(res, 404, "Community Not Found");
       }
       });
   } else {
