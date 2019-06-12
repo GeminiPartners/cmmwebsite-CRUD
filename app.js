@@ -11,6 +11,7 @@ var user = require('./routes/user');
 var auth = require('./auth');
 var item = require('./routes/item');
 var community = require('./routes/community');
+var item_category = require('./routes/item_category');
 
 var authMiddleware = require('./auth/middleware');
 
@@ -36,6 +37,7 @@ app.use('/', index);
 app.use('/user', user); // authMiddleware.ensureLoggedIn,
 app.use('/item', item); // authMiddleware.ensureLoggedIn,
 app.use('/community', community); // authMiddleware.ensureLoggedIn,
+app.use('/item_category', item_category); // authMiddleware.ensureLoggedIn,
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
