@@ -26,8 +26,19 @@ module.exports = {
   delete: function(id, user_id) {
     return knex('community').where({'id' : id}).del().then(function (result) {
       console.log('result: ',result);      
+    });    
+  },
+  getUserCommunity: function(user_id, community_id) {
+    return knex('user_community').where({'user_id' : user_id, 'community_id' : community_id}).first()
+  },
+  addUser: function(user_community) {
+    return knex('user_community').insert(user_community, 'id').then (ids => {
+      return ids[0];
     });
-    
-    console.log('finished query')
+  },
+  removeUser: function(id) {
+    return knex('user_community').where({'id' : id}).del().then(function (result) {
+      console.log('result: ',result);      
+    });   
   }
 }

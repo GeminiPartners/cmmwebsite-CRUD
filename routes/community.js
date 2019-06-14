@@ -24,6 +24,21 @@ function validCommunity(community) {
     const validName = community.name.trim() != '';
     const validDescription = community.description.trim() != ''; 
     return validName && validDescription
+};
+
+function validCommunityUser(community_id, user_id) {
+  Community.getOne(community_id).then(community => {
+      if (community) {
+       console.log(community);
+      User.getOne(user_id).then(user => {
+        console.log(user);
+        return true
+      });
+    } else {
+      console.log(false);
+      return false
+    };
+  });
 }
 
 router.post('/create', (req, res, next) => {
@@ -88,6 +103,59 @@ router.post('/delete/:id', (req, res) => {
                 });
               });
       } else {
+          resError(res, 404, "Community Not Found");
+      }
+      });
+  } else {
+      resError(res, 500, "Invalid ID");
+  }
+});
+
+router.post('/addUser/:id', (req, res, next) => {
+  Shared.allowOrigin(res);
+  const user_id = req.params.id;
+  const community_id = req.body.community_id;
+  const user_community_add = {
+    user_id : req.params.id,
+    community_id : req.body.community_id,
+    role : 0,
+    created_at : new Date(),
+  }
+  Community.getOne(community_id).then(community => {
+    if (community) {
+      User.getOne(user_id).then(user => {
+        if(user) {
+          Community.getUserCommunity(user_id, community_id).then(user_community => {
+            if(!user_community) {
+              Community
+              .addUser(user_community_add)
+              .then(id => {
+                res.json({
+                    id,
+                    message: 'User added to Community'
+                    });
+                  })
+                }
+            })
+          
+        } else {
+          res.json({message : 'Invalid User'})
+        }
+    });
+  } else {
+    res.json({message : "Invalid Community"})
+    };
+  });
+});
+
+router.post('/removeUser/:id', (req, res) => {
+  if (!isNaN(req.params.id)) {
+      Shared.allowOrigin(res);
+      Community.getUserCommunity(req.params.id, req.body.community_id).then(user_community => {
+      if (user_community) {
+             Community.removeUser(user_community.id)
+             .then(res.json(user_community));
+       } else {
           resError(res, 404, "Community Not Found");
       }
       });

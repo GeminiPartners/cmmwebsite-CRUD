@@ -40,6 +40,7 @@ router.post('/signup', (req, res, next) => {
                     // insert user into db
                     const user = {
                         email: req.body.email,
+                        username: req.body.username,
                         location: req.body.location,
                         instructions_default: req.body.instructions_default,
                         password: hash,
