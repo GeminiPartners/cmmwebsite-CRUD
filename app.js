@@ -35,13 +35,13 @@ app.use(cors({
 app.use('/auth', auth);
 app.use('/', index);
 app.use('/user', authMiddleware.ensureLoggedIn, user); // authMiddleware.ensureLoggedIn,
-app.use('/item', item); // authMiddleware.ensureLoggedIn,
-app.use('/community', community); // authMiddleware.ensureLoggedIn,
-app.use('/item_category', item_category); // authMiddleware.ensureLoggedIn,
+app.use('/item', authMiddleware.ensureLoggedIn, item); // authMiddleware.ensureLoggedIn,
+app.use('/community', authMiddleware.ensureLoggedIn, community); // authMiddleware.ensureLoggedIn,
+app.use('/item_category', authMiddleware.ensureLoggedIn, item_category); // authMiddleware.ensureLoggedIn,
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  var err = new Error('Address Not Found');
   err.status = 404;
   next(err);
 });
