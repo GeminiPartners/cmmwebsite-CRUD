@@ -2,8 +2,13 @@ const knex = require('./connection');
 
 module.exports = {
 
-  getByUser: function(id){
+  getByUser: function(id) {
     return knex('item').where('user_id', id);
+  },
+  getByCommunity: function(id) {
+    return knex('item').join('item_category_item', 'item.id', 'item_category_item.item_id')
+      .join('item_category', 'item_category_item.item_category_id', 'item_category.id')
+      .where('item_category.community_id', id);
   },
   getOne: function (id) {
     return knex('item').where('id', id).first();

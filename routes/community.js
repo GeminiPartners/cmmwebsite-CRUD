@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../db/user');
 const Sticker = require('../db/sticker');
 const Community = require('../db/community');
+const Item = require('../db/item');
 const Shared = require('../shared');
 
 
@@ -86,6 +87,24 @@ router.post('/create', (req, res, next) => {
         next(new Error('Invalid community'))
     }
     });
+
+router.get('/:id/item', (req,res)=>{
+  const decoded = Shared.decode(req.headers['auth_token']);
+  if (!isNaN(req.params.id)) {
+    Shared.allowOrigin(res);
+    Community.getOneToUpdate(req.params.id, decoded.user_id).then(community => {
+      if (community) {
+        Item.getByCommunity(req.params.id).then(items => {
+          res.json(items);
+        });
+      } else {
+        resError(res, 404, "Community not found");
+      }
+    })
+  } else {
+    resError(res, 500, "Invalid ID");
+  }
+})
 
 router.patch('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
@@ -215,6 +234,9 @@ router.post('/removeUser/:id', (req, res) => {
       resError(res, 500, "Invalid ID");
   }
 });
+
+
+
 
 function resError(res, statusCode, message) {
   res.status(statusCode);
