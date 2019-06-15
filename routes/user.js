@@ -4,12 +4,15 @@ const User = require('../db/user');
 const Sticker = require('../db/sticker');
 const Item = require('../db/item');
 const Shared = require('../shared');
+const jwt = require('jwt-simple');
+const JWT_SECRET = "kittens"; //change to environment variable
 
 
-router.get('/:id', (req, res) => {
-  if (!isNaN(req.params.id)) {
+router.get('/', (req, res) => {
+  const decoded = jwt.decode(req.headers['auth_token'], JWT_SECRET);
+  if (!isNaN(decoded.user_id)) {
     Shared.allowOrigin(res);
-    User.getOne(req.params.id).then(user => {
+    User.getOne(decoded["user_id"]).then(user => {
       if (user) {
         delete user.password;
         res.json(user);
@@ -22,21 +25,11 @@ router.get('/:id', (req, res) => {
   }
 });
 
-router.get('/:id/sticker', (req,res)=>{
-  if (!isNaN(req.params.id)) {
+router.get('/item', (req,res)=>{
+  const decoded = jwt.decode(req.headers['auth_token'], JWT_SECRET);
+  if (!isNaN(decoded.user_id)) {
     Shared.allowOrigin(res);
-    Sticker.getByUser(req.params.id).then(stickers => {
-      res.json(stickers);
-    });
-  } else {
-    resError(res, 500, "Invalid ID");
-  }
-})
-
-router.get('/:id/item', (req,res)=>{
-  if (!isNaN(req.params.id)) {
-    Shared.allowOrigin(res);
-    Item.getByUser(req.params.id).then(items => {
+    Item.getByUser(decoded.user_id).then(items => {
       res.json(items);
     });
   } else {

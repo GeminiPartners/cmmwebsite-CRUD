@@ -5,11 +5,14 @@ module.exports = {
 //   getByUser: function(id){
 //     return knex('community').where('user_id', id);
 //   },
-  getOne: function (id) {
-    return knex('community').where('id', id).first();
+  getOne: function (id, user_id) {
+    return knex('community').join('user_community', 'community.id', 'user_community.community_id').where({'community.id' : id, 'user_community.user_id' : user_id}).first();
   },
-  getOneToUpdate: function (id) {
-    return knex('community').where({'id' : id}).first();
+  getOneByName: function(name) {
+    return knex('community').where('name', name).first()
+  },
+  getOneToUpdate: function (id, user_id) {
+    return knex('community').join('user_community', 'community.id', 'user_community.community_id').where({'community.id' : id, 'user_community.user_id' : user_id}).first();
   },
   create: function(community) {
     return knex('community').insert(community, 'id').then (ids => {
