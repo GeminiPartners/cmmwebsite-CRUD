@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-
+const jwt = require('jwt-simple');
+const JWT_SECRET = "kittens"; //change to environment variable
 const router = express.Router();
 
 const User = require('../db/user')
@@ -75,7 +76,6 @@ router.post('/login', (req, res, next) => {
         User
             .getOneByEmail(req.body.email)
             .then(user => {
-                console.log('user', user);
                 if(user) {
                     bcrypt
                         .compare(req.body.password, user.password)
@@ -91,9 +91,16 @@ router.post('/login', (req, res, next) => {
                                     secure: isSecure,
                                     signed: true
                                 });
+                                const token = jwt.encode(
+                                    {
+                                    'user_id': user.id,
+                                    'is_active': user.is_active
+                                    },
+                                    JWT_SECRET);
                                 res.json({
                                     id: user.id,
-                                    message: 'Logged in!'
+                                    message: 'Logged in!',
+                                    'token': token
                                 });
                             } else {
                                 next(new Error('Invalid login3'));

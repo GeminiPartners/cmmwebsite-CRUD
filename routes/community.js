@@ -5,6 +5,7 @@ const Sticker = require('../db/sticker');
 const Community = require('../db/community');
 const Shared = require('../shared');
 
+
 router.get('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
     Shared.allowOrigin(res);

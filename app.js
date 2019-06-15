@@ -34,7 +34,7 @@ app.use(cors({
 
 app.use('/auth', auth);
 app.use('/', index);
-app.use('/user', user); // authMiddleware.ensureLoggedIn,
+app.use('/user', authMiddleware.ensureLoggedIn, user); // authMiddleware.ensureLoggedIn,
 app.use('/item', item); // authMiddleware.ensureLoggedIn,
 app.use('/community', community); // authMiddleware.ensureLoggedIn,
 app.use('/item_category', item_category); // authMiddleware.ensureLoggedIn,

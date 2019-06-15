@@ -1,6 +1,12 @@
+const jwt = require('jwt-simple');
+const JWT_SECRET = "kittens"; //change to environment variable
+
 function ensureLoggedIn(req, res, next) {
-    console.log(req.signedCookies);
-    if(req.signedCookies.user_id) {
+    console.log(req.headers['authorization']);
+    const decoded = jwt.decode(req.headers['authorization'], JWT_SECRET);
+    
+    console.log(decoded);
+    if(decoded.is_active) {
         next();
         console.log('should be working')
     } else {

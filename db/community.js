@@ -37,8 +37,7 @@ module.exports = {
     });
   },
   removeUser: function(id) {
-    return knex('user_community').where({'id' : id}).del().then(function (result) {
-      console.log('result: ',result);      
+    return knex('user_community').where({'id' : id}).del().then(function (result) {  
     });   
   }
 }
