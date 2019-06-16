@@ -1,20 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../db/user');
-const Sticker = require('../db/sticker');
+const Community = require('../db/community');
 const Item = require('../db/item');
 const Shared = require('../shared');
 
 router.get('/:id', (req, res) => {
-  if (!isNaN(req.params.id)) {
+  if (!isNaN(req.params.id) && !isNaN(req.body.community_id)) {
+    const decoded = Shared.decode(req.headers['auth_token']);
     Shared.allowOrigin(res);
-    Item.getOne(req.params.id).then(item => {
-      if (item) {
-        res.json(item);
+    Community.getOne(req.body.community_id, decoded.user_id).then(community => {
+      if(community){
+        console.log(community);
+        Item.getOne(req.params.id, req.body.community_id).then(item => {
+          if (item[0]) {
+            console.log('item: ',item)
+            res.json(item[0]);
+          } else {
+            resError(res, 404, "Item Not Found");
+          }
+        });
       } else {
         resError(res, 404, "Item Not Found");
       }
-    });
+
+    })
+    
   } else {
     resError(res, 500, "Invalid ID");
   }
@@ -29,23 +40,32 @@ function validItem(item) {
 router.post('/create', (req, res, next) => {
     if(validItem(req.body)) {
         Shared.allowOrigin(res);
+        const decoded = Shared.decode(req.headers['auth_token']);
         const item = {
             name: req.body.name,
             description: req.body.description,
             instructions: req.body.instructions,
             default_instructions_suppress: req.body.default_instructions_suppress,
             instructions: req.body.instructions,
-            user_id: req.body.user_id,
+            user_id: decoded.user_id,
             created_at: new Date()
         };
-
+//Do more work to check validity of item category ids
         Item
             .create(item)
             .then(id => {
-                res.json({
-                    id,
-                    message: 'item posted'
-                    });
+              for (i in req.body.item_categories) {
+                var item_category_item = {
+                  item_id: id,
+                  item_category_id: req.body.item_categories[i],
+                  created_at: new Date()
+                };
+                Item.addToItem_Category(item_category_item);
+              };
+              res.json({
+                  id,
+                  message: 'item posted'
+                  });
         });
         // redirect
         } else {
