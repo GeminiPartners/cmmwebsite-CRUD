@@ -36,11 +36,12 @@ function validCategories(item_categories, add_item_categories) {
    
     console.log(item_categories)
     var item_category_ids = new Array;
+    var validCategories = true;
     for (o in item_categories) {
-      item_category_ids.push(item_categories[o].item_category_id);
+      item_category_ids.push(item_categories[o].item_category_id);  
     };
     console.log(item_category_ids);
-    var validCategories = true;
+    
 
     for (i in add_item_categories) {
       if (!item_category_ids.includes(add_item_categories[i])) {
@@ -62,7 +63,13 @@ function validItem(item) {
     const validDescription = item.description.trim() != '';     
     console.log('validItem func: ', validName, validDescription)
     return validName && validDescription 
-}
+};
+
+function uniq(a) {
+  return a.sort().filter(function(item, pos, ary) {
+      return !pos || item != ary[pos - 1];
+  })
+};
 
 router.post('/create', (req, res, next) => {
   const decoded = Shared.decode(req.headers['auth_token']);
@@ -88,7 +95,7 @@ router.post('/create', (req, res, next) => {
       } else throw new Error('Invalid category!');  })
   .then(item_is_valid => {
       if (item_is_valid) {
-        return Item.create(item, add_item_categories, decoded.user_id);
+        return Item.create(item, uniq(add_item_categories), decoded.user_id);
       } else throw new Error('Invalid item!') 
   }).then(ids => {
     res.json({"message" : "Item created!"})
