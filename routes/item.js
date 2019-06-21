@@ -105,18 +105,20 @@ router.post('/create', (req, res, next) => {
 router.patch('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
       Shared.allowOrigin(res);
-      Item.getOneToUpdate(req.params.id, req.body.user_id).then(item => {
-      if (item) {
-          const item = {
+      const decoded = Shared.decode(req.headers['auth_token']);
+      Item.getOneToUpdate(req.params.id, decoded.user_id).then(returned_item => {
+      if (returned_item) {
+        console.log('item to update: ', returned_item)
+          const item_update = {
               id: req.params.id,
               name: req.body.name,
               description: req.body.description,
               instructions: req.body.instructions,
               default_instructions_suppress: req.body.default_instructions_suppress,
-              user_id: req.body.user_id
+              user_id: decoded.user_id
           };
           Item
-              .update(item)
+              .update(item_update, decoded.user_id)
               .then(id => {
                   res.json({
                       message: 'item updated'
@@ -133,20 +135,21 @@ router.patch('/:id', (req, res) => {
 
 router.post('/delete/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
-      Shared.allowOrigin(res);
-      Item.getOneToUpdate(req.params.id, req.body.user_id).then(item => {
-      if (item) {
-          Item.delete(req.params.id, req.body.user_id).then(id => {
-            res.json({
-                message: 'item deleted'
-                });
+    const decoded = Shared.decode(req.headers['auth_token']);
+    Shared.allowOrigin(res);
+    Item.getOneToUpdate(req.params.id, decoded.user_id).then(item => {
+    if (item) {
+        Item.delete(req.params.id, decoded.user_id).then(id => {
+          res.json({
+              message: 'item deleted'
               });
-      } else {
-          resError(res, 404, "Item Not Found");
-      }
-      });
+            });
+    } else {
+        resError(res, 404, "Item Not Found");
+    }
+    });
   } else {
-      resError(res, 500, "Invalid ID");
+    resError(res, 500, "Invalid ID");
   }
 });
 
@@ -157,11 +160,6 @@ router.post('/addtocategories/:id', (req, res) => {
     const add_item_categories = req.body.item_categories;
     console.log('these are our ids: ', add_item_categories);
   
-    // Item.getOneToUpdate(req.params.id, decoded.user_id)
-    // .then(item => {
-    //   console.log('item is: ', item)
-    //   Item_category.getByUser(decoded.user_id)
-    // })
     Item_category.getByUser(decoded.user_id)
     .then(item_categories => {
       console.log('item_categories: ',item_categories, 'add_item_categories: ', add_item_categories);

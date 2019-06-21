@@ -20,10 +20,11 @@ module.exports = {
     return knex('item').where({'id' : id, 'user_id': user_id}).first();
   },
   getOne: function(id, user_id) {
-    return knex('item')
+    return knex('item')      
       .join('item_category_item', 'item.id', 'item_category_item.item_id')
       .join('item_category', 'item_category_item.item_category_id', 'item_category.id')
       .join('user_community', 'item_category.community_id', 'user_community.community_id')
+      .select('item.name', 'item.description', 'item.default_instructions_suppress', 'item.instructions', 'item.user_id', 'item.created_at', 'item.updated_at')
       .where({'item.id' : id, 'user_community.user_id' : user_id}).first();
   },
   getCategories: function(id) {
@@ -53,11 +54,13 @@ module.exports = {
       });
   },
   update: function(item) {
-    return knex('item').where({'id' : item.id, 'user_id' : item.user_id}).update({
+    console.log(item);
+    return knex('item').where({'id' : item.id}).update({
         'name': item.name,        
         'description': item.description,
         'instructions': item.instructions,
-        'default_instructions_suppress': item.default_instructions_suppress
+        'default_instructions_suppress': item.default_instructions_suppress,
+        'updated_at': new Date()
     })
   },
   delete: function(id, user_id) {
