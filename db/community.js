@@ -31,8 +31,11 @@ module.exports = {
       console.log('result: ',result);      
     });    
   },
-  getUserCommunity: function(user_id, community_id) {
+  getUserCommunity: function(user_id, community_id) {    
     return knex('user_community').where({'user_id' : user_id, 'community_id' : community_id}).first()
+  },
+  getItem_categories(community_id) {
+    return knex('item_category').where({'item_category.community_id' : community_id})
   },
   addUser: function(user_community) {
     return knex('user_community').insert(user_community, 'id').then (ids => {

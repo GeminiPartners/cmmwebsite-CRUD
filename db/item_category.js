@@ -9,8 +9,11 @@ module.exports = {
         .join('user_community', 'community.id', 'user_community.community_id')
         .where('user_community.user_id', id);
   },
-  getOne: function (id) {
-    return knex('item_category').where('id', id).first();
+  getOne: function (id, user_id) {
+    return knex('item_category')
+    .join('user_community', 'item_category.community_id', 'user_community.community_id')
+    .select('item_category.id', 'item_category.name', 'item_category.order', 'item_category.community_id')
+    .where({'item_category.id' : id, 'user_community.user_id' : user_id}).first();
   },
   getOneToUpdate: function (id, community_id) {
     return knex('item_category').where({'id' : id, 'community_id': community_id}).first();
@@ -21,7 +24,8 @@ module.exports = {
     });
   },
   update: function(item_category) {
-    return knex('item_category').where({'id' : item_category.id, 'community_id' : item_category.community_id}).update({
+    console.log('item category here: ',item_category)
+    return knex('item_category').where({'id' : item_category.id}).update({
           name: item_category.name,
           order: item_category.order,
           updated_at: new Date()

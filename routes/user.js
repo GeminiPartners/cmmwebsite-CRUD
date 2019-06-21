@@ -9,7 +9,7 @@ const JWT_SECRET = "kittens"; //change to environment variable
 
 
 router.get('/', (req, res) => {
-  const decoded = jwt.decode(req.headers['auth_token'], JWT_SECRET);
+  const decoded = Shared.decode(req.headers['auth_token']);
   if (!isNaN(decoded.user_id)) {
     Shared.allowOrigin(res);
     User.getOne(decoded["user_id"]).then(user => {
@@ -26,7 +26,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/item', (req,res)=>{
-  const decoded = jwt.decode(req.headers['auth_token'], JWT_SECRET);
+  const decoded = Shared.decode(req.headers['auth_token']);
   if (!isNaN(decoded.user_id)) {
     Shared.allowOrigin(res);
     Item.getByUser(decoded.user_id).then(items => {
