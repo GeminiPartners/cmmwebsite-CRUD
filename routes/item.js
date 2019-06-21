@@ -7,30 +7,25 @@ const Item_category = require('../db/item_category')
 const Shared = require('../shared');
 
 router.get('/:id', (req, res) => {
-  if (!isNaN(req.params.id) && !isNaN(req.body.community_id)) {
+  if (!isNaN(req.params.id)) {
     const decoded = Shared.decode(req.headers['auth_token']);
     Shared.allowOrigin(res);
-    Community.getOne(req.body.community_id, decoded.user_id).then(community => {
-      if(community){
-        console.log(community);
-        Item.getOne(req.params.id, req.body.community_id).then(item => {
-          if (item[0]) {
-            console.log('item: ',item)
-            res.json(item[0]);
-          } else {
-            resError(res, 404, "Item Not Found");
-          }
-        });
+    Item.getOne(req.params.id, decoded.user_id)
+    .then(item => {
+      console.log('here is our item: ', item)
+      if (item) {
+        console.log('item: ',item)
+        res.json(item);
       } else {
         resError(res, 404, "Item Not Found");
       }
-
-    })
-    
-  } else {
+    });
+  }else {
     resError(res, 500, "Invalid ID");
   }
 });
+    
+  
 
 function validCategories(item_categories, add_item_categories) {
    
@@ -72,6 +67,7 @@ function uniq(a) {
 };
 
 router.post('/create', (req, res, next) => {
+  Shared.allowOrigin(res);
   const decoded = Shared.decode(req.headers['auth_token']);
   const item = {
     name: req.body.name,
@@ -86,7 +82,7 @@ router.post('/create', (req, res, next) => {
   Item_category.getByUser(decoded.user_id)
   .then(item_categories => {
     return validCategories(item_categories, req.body.item_categories)
-  })  
+  })
   .then(categories_are_valid => {
     console.log('valid cats returned: ', categories_are_valid)
       if (categories_are_valid) {
@@ -103,10 +99,8 @@ router.post('/create', (req, res, next) => {
   .catch(err => {
     console.log(err, err.message)
     resError(res, 404, err.message);
-  })
- 
-  
   });
+});
 
 router.patch('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
@@ -153,6 +147,51 @@ router.post('/delete/:id', (req, res) => {
       });
   } else {
       resError(res, 500, "Invalid ID");
+  }
+});
+
+router.post('/addtocategories/:id', (req, res) => {
+  if (!isNaN(req.params.id)) {
+    Shared.allowOrigin(res);
+    const decoded = Shared.decode(req.headers['auth_token']);    
+    const add_item_categories = req.body.item_categories;
+    console.log('these are our ids: ', add_item_categories);
+  
+    // Item.getOneToUpdate(req.params.id, decoded.user_id)
+    // .then(item => {
+    //   console.log('item is: ', item)
+    //   Item_category.getByUser(decoded.user_id)
+    // })
+    Item_category.getByUser(decoded.user_id)
+    .then(item_categories => {
+      console.log('item_categories: ',item_categories, 'add_item_categories: ', add_item_categories);
+      return validCategories(item_categories, add_item_categories)
+    })
+    .then(categories_are_valid => {
+      if (categories_are_valid) {
+        return Item.getCategories(req.params.id);
+      } else throw new Error('Invalid category!');  
+    })
+    .then(existingCategories => {
+      console.log('our existing categories: ', existingCategories, 'add_item_categories: ', add_item_categories); 
+      var noDuplicateCategories = true;
+      for(i in existingCategories){
+        if (add_item_categories.includes(existingCategories[i].item_category_id)) {
+          noDuplicateCategories = false
+        };
+      };
+        if (noDuplicateCategories) {
+          return Item.addToItem_Categories(req.params.id, req.body.item_categories);
+          console.log('item in categories: ',item)
+        } else throw new Error('Item already added to category!');  })
+    .then(ids => {
+      res.json({ids, "message" : "Item added to categories!"})
+    })
+    .catch(err => {
+      console.log(err, err.message)
+      resError(res, 404, err.message);
+    });
+      
   }
 });
 

@@ -11,13 +11,25 @@ module.exports = {
       .join('item_category', 'item_category_item.item_category_id', 'item_category.id')
       .where('item_category.community_id', id);
   },
-  getOne: function(id, community_id) {
+  getOneByCommunity: function(id, community_id) {
     return knex('item').join('item_category_item', 'item.id', 'item_category_item.item_id')
       .join('item_category', 'item_category_item.item_category_id', 'item_category.id')
       .where({'item_category.community_id' : community_id, 'item.id' : id});
   },
   getOneToUpdate: function (id, user_id) {
     return knex('item').where({'id' : id, 'user_id': user_id}).first();
+  },
+  getOne: function(id, user_id) {
+    return knex('item')
+      .join('item_category_item', 'item.id', 'item_category_item.item_id')
+      .join('item_category', 'item_category_item.item_category_id', 'item_category.id')
+      .join('user_community', 'item_category.community_id', 'user_community.community_id')
+      .where({'item.id' : id, 'user_community.user_id' : user_id}).first();
+  },
+  getCategories: function(id) {
+    return knex('item')
+      .join('item_category_item', 'item.id', 'item_category_item.item_id')
+      .where({'item.id' : id});
   },
   create: function(item, item_categories, add_user_id) {
     const add_item = {
@@ -54,10 +66,14 @@ module.exports = {
       console.log('result: ',result);      
     });
   },
-  addToItem_Category: function(item_category_item){
-    return knex('item_category_item').insert(item_category_item, 'id').then (ids => {
-      return ids[0];
-    })
+  addToItem_Categories: function(id, item_categories){
+    var item_category_items = [];
+    for (i in item_categories) {
+      item_category_items.push({item_id : id, item_category_id : item_categories[i], created_at: new Date()})
+    };
+    return knex('item_category_item').insert(item_category_items, 'id').then (ids => {
+      return ids;
+    });
   },
   validItem: function(item, user_id) {
     const validName = item.name.trim() != '';
