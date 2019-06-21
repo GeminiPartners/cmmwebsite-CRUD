@@ -123,17 +123,20 @@ router.patch('/:id', (req, res) => {
 
 
 router.post('/delete/:id', (req, res) => {
+  const decoded = Shared.decode(req.headers['auth_token']);
   if (!isNaN(req.params.id)) {
       Shared.allowOrigin(res);
-      Item_category.getOneToUpdate(req.params.id, req.body.community_id).then(item_category => {
-      if (item_category) {
+      Item_category
+      .getOneToUpdate(req.params.id, decoded.user_id)
+      .then(item_category => {
+      if (item_category && item_category.role > 0) {
           Item_category.delete(req.params.id).then(id => {
             res.json({
                 message: 'item_category deleted'
                 });
               });
       } else {
-          resError(res, 404, "Item_category Not Found");
+          resError(res, 404, "Cannot delete item category");
       }
       });
   } else {
