@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../db/user');
 const Community = require('../db/community');
 const Item = require('../db/item');
+const Item_category = require('../db/item_category')
 const Shared = require('../shared');
 
 router.get('/:id', (req, res) => {
@@ -31,47 +32,74 @@ router.get('/:id', (req, res) => {
   }
 });
 
+function validCategories(item_categories, add_item_categories) {
+   
+    console.log(item_categories)
+    var item_category_ids = new Array;
+    for (o in item_categories) {
+      item_category_ids.push(item_categories[o].item_category_id);
+    };
+    console.log(item_category_ids);
+    var validCategories = true;
+
+    for (i in add_item_categories) {
+      if (!item_category_ids.includes(add_item_categories[i])) {
+        console.log(add_item_categories[i])
+        validCategories = false;
+      };
+      console.log('valid categories: ',validCategories);
+      
+    };
+    console.log('valid cats to be returned: ', validCategories)
+    return validCategories
+   
+  
+};
+
 function validItem(item) {
+  console.log('here is the item: ',item);
     const validName = item.name.trim() != '';
-    const validDescription = item.description.trim() != ''; 
-    return validName && validDescription
+    const validDescription = item.description.trim() != '';     
+    console.log('validItem func: ', validName, validDescription)
+    return validName && validDescription 
 }
 
 router.post('/create', (req, res, next) => {
-    if(validItem(req.body)) {
-        Shared.allowOrigin(res);
-        const decoded = Shared.decode(req.headers['auth_token']);
-        const item = {
-            name: req.body.name,
-            description: req.body.description,
-            instructions: req.body.instructions,
-            default_instructions_suppress: req.body.default_instructions_suppress,
-            instructions: req.body.instructions,
-            user_id: decoded.user_id,
-            created_at: new Date()
-        };
-//Do more work to check validity of item category ids
-        Item
-            .create(item)
-            .then(id => {
-              for (i in req.body.item_categories) {
-                var item_category_item = {
-                  item_id: id,
-                  item_category_id: req.body.item_categories[i],
-                  created_at: new Date()
-                };
-                Item.addToItem_Category(item_category_item);
-              };
-              res.json({
-                  id,
-                  message: 'item posted'
-                  });
-        });
-        // redirect
-        } else {
-            next(new Error('Invalid item'))
-        }
-        });
+  const decoded = Shared.decode(req.headers['auth_token']);
+  const item = {
+    name: req.body.name,
+    description: req.body.description,
+    instructions: req.body.instructions,
+    default_instructions_suppress: req.body.default_instructions_suppress
+  }  ;
+  const add_item_categories = req.body.item_categories;
+
+  console.log('req body: ',item);
+
+  Item_category.getByUser(decoded.user_id)
+  .then(item_categories => {
+    return validCategories(item_categories, req.body.item_categories)
+  })  
+  .then(categories_are_valid => {
+    console.log('valid cats returned: ', categories_are_valid)
+      if (categories_are_valid) {
+        return validItem(item);
+        console.log('item in categories: ',item)
+      } else throw new Error('Invalid category!');  })
+  .then(item_is_valid => {
+      if (item_is_valid) {
+        return Item.create(item, add_item_categories, decoded.user_id);
+      } else throw new Error('Invalid item!') 
+  }).then(ids => {
+    res.json({"message" : "Item created!"})
+  })
+  .catch(err => {
+    console.log(err, err.message)
+    resError(res, 404, err.message);
+  })
+ 
+  
+  });
 
 router.patch('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {

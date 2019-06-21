@@ -3,7 +3,11 @@ const knex = require('./connection');
 module.exports = {
 
   getByUser: function(id){
-    return knex('item_category').where('community_id', id);
+    return knex('item_category')
+        .select(knex.raw(`*, item_category.id as item_category_id`))
+        .join('community', 'item_category.community_id', 'community.id')
+        .join('user_community', 'community.id', 'user_community.community_id')
+        .where('user_community.user_id', id);
   },
   getOne: function (id) {
     return knex('item_category').where('id', id).first();
