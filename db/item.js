@@ -9,6 +9,7 @@ module.exports = {
   getByCommunity: function(id) {
     return knex('item').join('item_category_item', 'item.id', 'item_category_item.item_id')
       .join('item_category', 'item_category_item.item_category_id', 'item_category.id')
+      .select('item.name', 'item.description', 'item.instructions', 'item.default_instructions_suppress', 'item.created_at', 'item.updated_at')
       .where('item_category.community_id', id);
   },
   getOneByCommunity: function(id, community_id) {

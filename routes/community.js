@@ -8,8 +8,12 @@ const Shared = require('../shared');
 
 
 router.get('/:id', (req, res) => {
+  console.log('the id is: ',req.params.id);
+  res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
+  res.set('Access-Control-Allow-Credentials', 'true');
   if (!isNaN(req.params.id)) {
-    const decoded = Shared.decode(req.headers['auth_token']);
+    const decoded = Shared.decodeToken(req);
+    console.log('decoded token is: ',decoded)
     Shared.allowOrigin(res);
     Community.getOne(req.params.id, decoded.user_id).then(community => {
       if (community) {
@@ -46,7 +50,7 @@ function validCommunityUser(community_id, user_id) {
 
 router.post('/create', (req, res, next) => {
   if(validCommunity(req.body)) {
-    const decoded = Shared.decode(req.headers['auth_token']);
+    const decoded = Shared.decodeToken(req);
     Community
       .getOneByName(req.body.name)
       .then(community => {
@@ -89,7 +93,8 @@ router.post('/create', (req, res, next) => {
     });
 
 router.get('/:id/item', (req,res)=>{
-  const decoded = Shared.decode(req.headers['auth_token']);
+  const decoded = Shared.decodeToken(req);
+  Shared.allowOrigin(res);
   if (!isNaN(req.params.id)) {
     Shared.allowOrigin(res);
     Community.getOneToUpdate(req.params.id, decoded.user_id).then(community => {
@@ -108,7 +113,7 @@ router.get('/:id/item', (req,res)=>{
 
 router.patch('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
-    const decoded = Shared.decode(req.headers['auth_token']);
+    const decoded = Shared.decodeToken(req);
     Shared.allowOrigin(res);
     Community.getOneToUpdate(req.params.id, decoded.user_id).then(community => {
     if (community && community.role > 0) {
@@ -142,7 +147,7 @@ router.patch('/:id', (req, res) => {
 
 router.post('/delete/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
-      const decoded = Shared.decode(req.headers['auth_token']);
+      const decoded = Shared.decodeToken(req);
       Shared.allowOrigin(res);
       Community.getOneToUpdate(req.params.id, decoded.user_id).then(community => {
       if (community && community.role > 0) {
@@ -166,7 +171,7 @@ router.post('/delete/:id', (req, res) => {
 });
 
 router.post('/addUser/:id', (req, res, next) => {
-  const decoded = Shared.decode(req.headers['auth_token']);
+  const decoded = Shared.decodeToken(req);
   Shared.allowOrigin(res);
   const user_id = req.params.id;
   const community_id = req.body.community_id;
@@ -212,7 +217,7 @@ router.post('/addUser/:id', (req, res, next) => {
 
 router.post('/removeUser/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
-      const decoded = Shared.decode(req.headers['auth_token']);
+      const decoded = Shared.decodeToken(req);
       Shared.allowOrigin(res);
       Community.getUserCommunity(decoded.user_id,req.body.community_id).then(auth => {
         Community.getUserCommunity(req.params.id, req.body.community_id).then(user_community => {
