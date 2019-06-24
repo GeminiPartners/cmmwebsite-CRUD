@@ -8,6 +8,12 @@ module.exports = {
   getOne: function (id, user_id) {
     return knex('community').join('user_community', 'community.id', 'user_community.community_id').where({'community.id' : id, 'user_community.user_id' : user_id}).first();
   },
+  getByUser: function (user_id) {
+    return knex('community')
+    .join('user_community', 'community.id', 'user_community.community_id')
+    .select('community.id', 'community.name', 'community.description', 'community.community_type')
+    .where({'user_community.user_id' : user_id});
+  },
   getOneByName: function(name) {
     return knex('community').where('name', name).first()
   },

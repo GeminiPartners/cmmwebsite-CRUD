@@ -12,6 +12,14 @@ module.exports = {
       .select('item.name', 'item.description', 'item.instructions', 'item.default_instructions_suppress', 'item.created_at', 'item.updated_at')
       .where('item_category.community_id', id);
   },
+  getByItem_category: function(id, user_id) {
+    return knex('item')
+      .join('item_category_item', 'item.id', 'item_category_item.item_id')
+      .join('item_category', 'item_category_item.item_category_id', 'item_category.id')
+      .join('user_community', 'item_category.community_id', 'user_community.community_id')
+      .select('item.name', 'item.description', 'item.instructions', 'item.default_instructions_suppress', 'item.created_at', 'item.updated_at')
+      .where({'item_category.id': id, 'user_community.user_id': user_id});
+  },
   getOneByCommunity: function(id, community_id) {
     return knex('item').join('item_category_item', 'item.id', 'item_category_item.item_id')
       .join('item_category', 'item_category_item.item_category_id', 'item_category.id')

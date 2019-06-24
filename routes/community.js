@@ -1,22 +1,42 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../db/user');
-const Sticker = require('../db/sticker');
+const Item_category = require('../db/item_category');
 const Community = require('../db/community');
 const Item = require('../db/item');
 const Shared = require('../shared');
+
+function getCommunityId (params_id, cookies_id) {
+  if (!isNaN(params_id)) {
+    return params_id
+  } else if (!isNaN(cookies_id)) {
+    return cookies_id
+  } else {
+    return false
+  };
+}
 
 
 router.get('/:id', (req, res) => {
   console.log('the id is: ',req.params.id);
   res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
   res.set('Access-Control-Allow-Credentials', 'true');
-  if (!isNaN(req.params.id)) {
+
+  const id = getCommunityId(req.params.id, req.signedCookies['community_id'])
+  if (id) {
     const decoded = Shared.decodeToken(req);
     console.log('decoded token is: ',decoded)
     Shared.allowOrigin(res);
-    Community.getOne(req.params.id, decoded.user_id).then(community => {
+    Community
+    .getOne(id, decoded.user_id)
+    .then(community => {
       if (community) {
+        const isSecure = req.app.get('env') !='development';
+        res.cookie('community_id', id, {
+            httpOnly: true,
+            secure: isSecure,
+            signed: true
+        });
         res.json(community);
       } else {
         resError(res, 404, "Community Not Found");
@@ -25,6 +45,7 @@ router.get('/:id', (req, res) => {
   } else {
     resError(res, 500, "Invalid ID");
   }
+
 });
 
 function validCommunity(community) {
@@ -110,6 +131,26 @@ router.get('/:id/item', (req,res)=>{
     resError(res, 500, "Invalid ID");
   }
 })
+
+router.get('/:id/category', (req,res)=>{
+  const decoded = Shared.decodeToken(req);
+  Shared.allowOrigin(res);
+  if (!isNaN(req.params.id)) {
+    Shared.allowOrigin(res);
+    Community.getOneToUpdate(req.params.id, decoded.user_id).then(community => {
+      if (community) {
+        Item_category.getByCommunity(req.params.id, decoded.user_id).then(items => {
+          res.json(items);
+        });
+      } else {
+        resError(res, 404, "Community not found");
+      }
+    })
+  } else {
+    resError(res, 500, "Invalid ID");
+  }
+})
+
 
 router.patch('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {

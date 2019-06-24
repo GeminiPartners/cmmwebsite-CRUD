@@ -21,6 +21,13 @@ module.exports = {
     .select('item_category.id', 'item_category.name', 'item_category.order', 'item_category.community_id', 'user_community.role')
     .where({'item_category.id' : id, 'user_community.user_id' : user_id}).first();
   },
+  getByCommunity: function (community_id, user_id) {
+    return knex('item_category')
+    .join('user_community', 'item_category.community_id', 'user_community.community_id')
+    .select('item_category.id', 'item_category.name', 'item_category.order', 'item_category.community_id')
+    .where({'item_category.community_id' : community_id, 'user_community.user_id' : user_id})
+    .orderBy('item_category.order', 'item_category_name');
+  },
   create: function(item_category) {
     return knex('item_category').insert(item_category, 'id').then (ids => {
       return ids[0];

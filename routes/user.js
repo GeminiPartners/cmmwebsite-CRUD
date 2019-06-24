@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../db/user');
-const Sticker = require('../db/sticker');
+const Community = require('../db/community');
 const Item = require('../db/item');
 const Shared = require('../shared');
 const jwt = require('jwt-simple');
@@ -17,7 +17,7 @@ function decodeToken(req) {
 
 router.get('/', (req, res) => {
 
-  const decoded = decodeToken(req);
+  const decoded = Shared.decodeToken(req);
   res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
   res.set('Access-Control-Allow-Credentials', 'true');
 
@@ -38,13 +38,26 @@ router.get('/', (req, res) => {
 });
 
 router.get('/item', (req,res)=>{
-  const decoded = decodeToken(req);
+  const decoded = Shared.decodeToken(req);
   res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
   res.set('Access-Control-Allow-Credentials', 'true');
   if (!isNaN(decoded.user_id)) {
     Shared.allowOrigin(res);
     Item.getByUser(decoded.user_id).then(items => {
       res.json(items);
+    });
+  } else {
+    resError(res, 500, "Invalid ID");
+  }
+})
+
+router.get('/community', (req, res)=>{
+  Shared.allowOrigin(res);
+  const decoded = Shared.decodeToken(req);
+  console.log(decoded);
+  if (!isNaN(decoded.user_id)) {
+    Community.getByUser(decoded.user_id).then(communities => {
+      res.json(communities);
     });
   } else {
     resError(res, 500, "Invalid ID");

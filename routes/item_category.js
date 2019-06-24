@@ -10,7 +10,7 @@ const Shared = require('../shared');
 router.get('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
     Shared.allowOrigin(res);
-    const decoded = Shared.decode(req.headers['auth_token']);
+    const decoded = Shared.decodeToken(req);
     Item_category.getOne(req.params.id, decoded.user_id).then(item_category => {
       if (item_category) {
         res.json(item_category);
@@ -29,7 +29,7 @@ function validItem_category(item_category) {
 }
 
 router.post('/create', (req, res, next) => {
-  const decoded = Shared.decode(req.headers['auth_token']);
+  const decoded = Shared.decodeToken(req);
     if(validItem_category(req.body)) {
         Shared.allowOrigin(res);
         const item_category = {
@@ -73,7 +73,7 @@ router.post('/create', (req, res, next) => {
         });
 
 router.patch('/:id', (req, res) => {
-  const decoded = Shared.decode(req.headers['auth_token']);
+  const decoded = Shared.decodeToken(req);
   const item_category_update = {
     id: req.params.id,
     name: req.body.name,
@@ -121,9 +121,31 @@ router.patch('/:id', (req, res) => {
   }
 });
 
+router.get('/:id/item', (req,res)=>{
+  const decoded = Shared.decodeToken(req);
+  Shared.allowOrigin(res);
+  if (!isNaN(req.params.id)) {
+    Shared.allowOrigin(res);
+    Item
+    .getByItem_category(req.params.id, decoded.user_id)
+    .then(items => {
+      if(items) {
+        res.json(items)
+      } else {
+        throw new Error('No items in this category')
+      }
+    })
+    .catch(err => {
+      resError(res, 404, err.message)
+    });
+  } else {
+    resError(res, 500, "Invalid ID");
+  }
+})
+
 
 router.post('/delete/:id', (req, res) => {
-  const decoded = Shared.decode(req.headers['auth_token']);
+  const decoded = Shared.decodeToken(req);
   if (!isNaN(req.params.id)) {
       Shared.allowOrigin(res);
       Item_category

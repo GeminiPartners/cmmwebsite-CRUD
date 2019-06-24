@@ -14,6 +14,7 @@ var community = require('./routes/community');
 var item_category = require('./routes/item_category');
 
 var authMiddleware = require('./auth/middleware');
+var Shared = require('./shared.js')
 
 var app = express();
 
@@ -41,6 +42,7 @@ app.use('/item_category', authMiddleware.ensureLoggedIn, item_category); // auth
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
+  Shared.allowOrigin(res);
   var err = new Error('Address Not Found');
   err.status = 404;
   next(err);
@@ -55,7 +57,7 @@ app.use(function(err, req, res, next) {
   // // render the error page
  
   // res.render('error');
-
+  Shared.allowOrigin(res);
   res.status(err.status || res.statusCode || 500);
   res.json({
     message: err.message,
