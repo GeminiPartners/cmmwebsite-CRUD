@@ -140,6 +140,7 @@ router.get('/:id/category', (req,res)=>{
     Community.getOneToUpdate(req.params.id, decoded.user_id).then(community => {
       if (community) {
         Item_category.getByCommunity(req.params.id, decoded.user_id).then(items => {
+          console.log(items);
           res.json(items);
         });
       } else {

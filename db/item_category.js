@@ -22,10 +22,13 @@ module.exports = {
     .where({'item_category.id' : id, 'user_community.user_id' : user_id}).first();
   },
   getByCommunity: function (community_id, user_id) {
-    return knex('item_category')
+    return knex('item_category_item')
+    .join('item_category', 'item_category_item.item_category_id', 'item_category.id')
     .join('user_community', 'item_category.community_id', 'user_community.community_id')
     .select('item_category.id', 'item_category.name', 'item_category.order', 'item_category.community_id')
     .where({'item_category.community_id' : community_id, 'user_community.user_id' : user_id})
+    .groupBy('item_category.id')
+    .count('*')
     .orderBy('item_category.order', 'item_category_name');
   },
   create: function(item_category) {
