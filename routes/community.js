@@ -70,6 +70,7 @@ function validCommunityUser(community_id, user_id) {
 }
 
 router.post('/create', (req, res, next) => {
+  Shared.allowOrigin(res);
   if(validCommunity(req.body)) {
     const decoded = Shared.decodeToken(req);
     Community
@@ -290,4 +291,4 @@ function resError(res, statusCode, message) {
   res.json({message});
 }
 
-module.exports = router;
+module.exports =  router;
