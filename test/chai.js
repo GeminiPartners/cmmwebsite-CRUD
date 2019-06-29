@@ -4,17 +4,13 @@ var should = require('chai').should() //actually call the function
 
   Community = require('../routes/community')
 
-  describe('validCommunity(community)', function() {
-    context('With valid strings in Name and Description', function() {
-        community = {
-            name: "Foo",
-            description: "Bar"
-        }
-      it('should return true', function() {
-        Community.validCommunity(community).should.be.true;
-      });
-    });
-  });
+const chai = require('chai');
+
+const chaiAsPromised = require('chai-as-promised');
+
+// set up the middleware
+chai.use(chaiAsPromised);
+
 
 foo.should.be.a('string');
 foo.should.equal('bar');
