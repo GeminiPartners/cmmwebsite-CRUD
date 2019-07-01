@@ -19,7 +19,7 @@ function getCommunityId (params_id, cookies_id) {
 
 router.get('/:id', (req, res) => {
   console.log('the id is: ',req.params.id);
-  res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
+  res.set('Access-Control-Allow-Origin', 'https://127.0.0.1:8080');
   res.set('Access-Control-Allow-Credentials', 'true');
 
   const id = getCommunityId(req.params.id, req.signedCookies['community_id'])
@@ -70,6 +70,7 @@ function validCommunityUser(community_id, user_id) {
 }
 
 router.post('/create', (req, res, next) => {
+  console.log('request body', req.body)
   Shared.allowOrigin(res);
   if(validCommunity(req.body)) {
     const decoded = Shared.decodeToken(req);
@@ -96,7 +97,7 @@ router.post('/create', (req, res, next) => {
                 };
               Community
               .addUser(user_community_add)
-              
+              console.log('posted success')
               res.json({
                 id,
                 message: 'community posted'

@@ -18,7 +18,7 @@ function decodeToken(req) {
 router.get('/', (req, res) => {
 
   const decoded = Shared.decodeToken(req);
-  res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
+  res.set('Access-Control-Allow-Origin', 'https://127.0.0.1:8080');
   res.set('Access-Control-Allow-Credentials', 'true');
 
   console.log('haha decoded: ', decoded)
@@ -39,7 +39,7 @@ router.get('/', (req, res) => {
 
 router.get('/item', (req,res)=>{
   const decoded = Shared.decodeToken(req);
-  res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
+  res.set('Access-Control-Allow-Origin', 'https://127.0.0.1:8080');
   res.set('Access-Control-Allow-Credentials', 'true');
   if (!isNaN(decoded.user_id)) {
     Shared.allowOrigin(res);

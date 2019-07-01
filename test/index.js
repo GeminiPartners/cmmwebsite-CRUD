@@ -18,12 +18,11 @@ describe('Item.getByUser', function() {
     const item_id = 1;
     const expectedResult = "Canoe";
     it('should return items', function() {
-       return Item
+      return Item
       .getByUser(item_id)
       .then(items => {
-         items[0].name.should.equal(expectedResult);
-        })
-      ;    
+        items[0].name.should.equal(expectedResult);
+        });    
       });  
     });
  

@@ -21,6 +21,7 @@ module.exports = {
     return knex('community').join('user_community', 'community.id', 'user_community.community_id').where({'community.id' : id, 'user_community.user_id' : user_id}).first();
   },
   create: function(community) {
+    console.log('got it to me: ', community);
     return knex('community').insert(community, 'id').then (ids => {
       return ids[0];
     });
