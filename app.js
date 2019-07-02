@@ -18,6 +18,8 @@ var Shared = require('./shared.js')
 
 var app = express();
 
+require('dotenv-safe').config();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
