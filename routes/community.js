@@ -19,7 +19,7 @@ function getCommunityId (params_id, cookies_id) {
 
 router.get('/:id', (req, res) => {
   console.log('the id is: ',req.params.id);
-  res.set('Access-Control-Allow-Origin', 'https://127.0.0.1:8080');
+  res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
   res.set('Access-Control-Allow-Credentials', 'true');
 
   const id = getCommunityId(req.params.id, req.signedCookies['community_id'])

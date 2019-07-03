@@ -4,17 +4,17 @@ exports.seed = (knex, Promise) => {
         const users = [
           {
             id: 1,
-            email: 'berto.ort@gmail.com',
+            email: 'hello@hello.com',
             username: 'berto',
-            password: 'pineapple',
+            password: '$2b$10$zQprr9Nb7nX11FNau39KRO.Xo91qZJoC/19phsgypma.MYhNkDBJO',
             location: 'Gastonia',
             created_at: new Date()
           },
           {
             id: 2,
-            email: 'hello@cjr.co.de',
+            email: 'helen@helen.com',
             username: 'helen',
-            password: 'keyboard_cat',
+            password: '$2b$10$zQprr9Nb7nX11FNau39KRO.Xo91qZJoC/19phsgypma.MYhNkDBJO',
             location: 'Raleigh',
             created_at: new Date()
           }

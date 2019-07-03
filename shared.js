@@ -7,7 +7,7 @@ function decode (token) {
 
 function allowOrigin(res) {
     res.set('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin');
-    res.set('Access-Control-Allow-Origin', 'https://127.0.0.1:8080');
+    res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
     res.set('Access-Control-Allow-Credentials', 'true');
 };
 

@@ -1,7 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jwt-simple');
-const JWT_SECRET = "kittens"; //change to environment variable
+const JWT_SECRET = process.env.JWT_SECRET;
+console.log('secret: ',JWT_SECRET);
 const router = express.Router();
 var authMiddleware = require('./middleware');
 
@@ -14,7 +15,7 @@ router.get('/', (req, res) => {
 });
 
 function setAllowOrigin(res) {
-    res.set('Access-Control-Allow-Origin', 'https://127.0.0.1:8080');
+    res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
     res.set('Access-Control-Allow-Credentials', 'true');
 };
 
@@ -110,7 +111,7 @@ router.post('/signup', (req, res, next) => {
 });
 
 router.post('/login', (req, res, next) => {
-    res.set('Access-Control-Allow-Origin', 'https://127.0.0.1:8080');
+    res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
     res.set('Access-Control-Allow-Credentials', 'true');
     console.log('whats happing?')
     if(validLogin(req.body)) {
@@ -168,7 +169,7 @@ router.post('/login', (req, res, next) => {
 });
 
 router.get('/login', (req, res, next) => {
-    res.set('Access-Control-Allow-Origin', 'https://127.0.0.1:8080');
+    res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
     res.set('Access-Control-Allow-Credentials', 'true');
     console.log('whats happing?')
     if(validLogin(req.body)) {
