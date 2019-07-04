@@ -1,5 +1,5 @@
 const jwt = require('jwt-simple');
-const JWT_SECRET = "kittens"; //change to environment variable
+const JWT_SECRET = process.env.JWT_SECRET
 
 function decode (token) {
     return(jwt.decode(token, JWT_SECRET));
@@ -13,8 +13,10 @@ function allowOrigin(res) {
 
 function decodeToken(req) {
     if (req.headers['auth_token']) {
+        console.log('from the header', req.headers['auth_token'])
         return decode(req.headers['auth_token']);
     } else {
+        console.log('from the cookies: ', req.signedCookies['auth_token'])
         return decode(req.signedCookies['auth_token'])
     }
 };

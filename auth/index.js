@@ -5,6 +5,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 console.log('secret: ',JWT_SECRET);
 const router = express.Router();
 var authMiddleware = require('./middleware');
+var Shared = require('../shared')
 
 const User = require('../db/user')
 
@@ -14,10 +15,7 @@ router.get('/', (req, res) => {
     })
 });
 
-function setAllowOrigin(res) {
-    res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
-    res.set('Access-Control-Allow-Credentials', 'true');
-};
+
 
 function setUserIdCookie(req, res, id) {
     const isSecure = req.app.get('env') !='development';
@@ -65,7 +63,7 @@ function validLogin(user) {
 router.post('/signup', (req, res, next) => {
     console.log('sign up: ', req.body)
     if(validUser(req.body)) {
-        setAllowOrigin(res);
+        Shared.allowOrigin(res);
         User
             .getOneByEmail(req.body.email)
             .then(user => {
@@ -111,8 +109,7 @@ router.post('/signup', (req, res, next) => {
 });
 
 router.post('/login', (req, res, next) => {
-    res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
-    res.set('Access-Control-Allow-Credentials', 'true');
+    Shared.allowOrigin(res);
     console.log('whats happing?')
     if(validLogin(req.body)) {
         console.log(req.body);
@@ -169,9 +166,7 @@ router.post('/login', (req, res, next) => {
 });
 
 router.get('/login', (req, res, next) => {
-    res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
-    res.set('Access-Control-Allow-Credentials', 'true');
-    console.log('whats happing?')
+    Shared.allowOrigin(res);
     if(validLogin(req.body)) {
         console.log(req.body);
         User
