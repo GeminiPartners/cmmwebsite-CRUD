@@ -16,7 +16,7 @@ function decodeToken(req) {
 }
 
 router.get('/', (req, res) => {
-  Shared.allowOrigin(res);
+  Shared.allowOrigin(res, req);
   const decoded = Shared.decodeToken(req);
 
   if (!isNaN(decoded.user_id)) {    
@@ -34,10 +34,10 @@ router.get('/', (req, res) => {
 });
 
 router.get('/item', (req,res)=>{
-  Shared.allowOrigin(res);
+  Shared.allowOrigin(res, req);
   const decoded = Shared.decodeToken(req);
   if (!isNaN(decoded.user_id)) {
-    Shared.allowOrigin(res);
+    Shared.allowOrigin(res, req);
     Item.getByUser(decoded.user_id).then(items => {
       res.json(items);
     });
@@ -47,7 +47,7 @@ router.get('/item', (req,res)=>{
 })
 
 router.get('/community', (req, res)=>{
-  Shared.allowOrigin(res);
+  Shared.allowOrigin(res, req);
   const decoded = Shared.decodeToken(req);
   console.log(decoded);
   if (!isNaN(decoded.user_id)) {

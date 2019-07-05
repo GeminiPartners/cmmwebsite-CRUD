@@ -9,7 +9,7 @@ const Shared = require('../shared');
 
 router.get('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
-    Shared.allowOrigin(res);
+    Shared.allowOrigin(res, req);
     const decoded = Shared.decodeToken(req);
     Item_category.getOne(req.params.id, decoded.user_id).then(item_category => {
       if (item_category) {
@@ -31,7 +31,7 @@ function validItem_category(item_category) {
 router.post('/create', (req, res, next) => {
   const decoded = Shared.decodeToken(req);
     if(validItem_category(req.body)) {
-        Shared.allowOrigin(res);
+        Shared.allowOrigin(res, req);
         const item_category = {
             name: req.body.name,
             order: req.body.order,
@@ -80,7 +80,7 @@ router.patch('/:id', (req, res) => {
     order: req.body.order    
   };
   if (!isNaN(req.params.id)) {
-      Shared.allowOrigin(res);
+      Shared.allowOrigin(res, req);
       Item_category
       .getOne(req.params.id, decoded.user_id)
       .then(item_category => {
@@ -123,9 +123,9 @@ router.patch('/:id', (req, res) => {
 
 router.get('/:id/item', (req,res)=>{
   const decoded = Shared.decodeToken(req);
-  Shared.allowOrigin(res);
+  Shared.allowOrigin(res, req);
   if (!isNaN(req.params.id)) {
-    Shared.allowOrigin(res);
+    Shared.allowOrigin(res, req);
     Item
     .getByItem_category(req.params.id, decoded.user_id)
     .then(items => {
@@ -147,7 +147,7 @@ router.get('/:id/item', (req,res)=>{
 router.post('/delete/:id', (req, res) => {
   const decoded = Shared.decodeToken(req);
   if (!isNaN(req.params.id)) {
-      Shared.allowOrigin(res);
+      Shared.allowOrigin(res, req);
       Item_category
       .getOneToUpdate(req.params.id, decoded.user_id)
       .then(item_category => {

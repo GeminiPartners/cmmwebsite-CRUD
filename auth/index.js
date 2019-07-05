@@ -63,7 +63,7 @@ function validLogin(user) {
 router.post('/signup', (req, res, next) => {
     console.log('sign up: ', req.body)
     if(validUser(req.body)) {
-        Shared.allowOrigin(res);
+        Shared.allowOrigin(res, req);
         User
             .getOneByEmail(req.body.email)
             .then(user => {
@@ -109,7 +109,7 @@ router.post('/signup', (req, res, next) => {
 });
 
 router.post('/login', (req, res, next) => {
-    Shared.allowOrigin(res);
+    Shared.allowOrigin(res, req);
     console.log('whats happing?')
     if(validLogin(req.body)) {
         console.log(req.body);
@@ -166,7 +166,7 @@ router.post('/login', (req, res, next) => {
 });
 
 router.get('/login', (req, res, next) => {
-    Shared.allowOrigin(res);
+    Shared.allowOrigin(res, req);
     if(validLogin(req.body)) {
         console.log(req.body);
         User

@@ -1,3 +1,4 @@
+require('dotenv-safe').config();
 const jwt = require('jwt-simple');
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -5,10 +6,21 @@ function decode (token) {
     return(jwt.decode(token, JWT_SECRET));
 }
 
-function allowOrigin(res) {
+function whitelistCheck(site) {
+    const whitelist = process.env.WHITELIST  
+    if (whitelist.includes(site)) {
+        return site
+    } else {
+        return ""
+    } 
+};
+
+function allowOrigin(res, req) {
+    const originSite = whitelistCheck(req.header("origin"));
     res.set('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin');
-    res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
+    res.set('Access-Control-Allow-Origin', originSite);
     res.set('Access-Control-Allow-Credentials', 'true');
+    return res
 };
 
 function decodeToken(req) {
@@ -24,5 +36,6 @@ function decodeToken(req) {
 module.exports = {
     allowOrigin,
     decode,
-    decodeToken
+    decodeToken,
+    whitelistCheck
 }

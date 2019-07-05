@@ -18,7 +18,7 @@ function getCommunityId (params_id, cookies_id) {
 
 
 router.get('/:id', (req, res) => {
-  Shared.allowOrigin(res);
+  Shared.allowOrigin(res, req);
 
   const id = getCommunityId(req.params.id, req.signedCookies['community_id'])
   if (id) {
@@ -69,14 +69,14 @@ function validCommunityUser(community_id, user_id) {
 
 router.post('/create', (req, res, next) => {
   console.log('request body', req.body)
-  Shared.allowOrigin(res);
+  Shared.allowOrigin(res, req);
   if(validCommunity(req.body)) {
     const decoded = Shared.decodeToken(req);
     Community
       .getOneByName(req.body.name)
       .then(community => {
         if(!community) {
-          Shared.allowOrigin(res);
+          Shared.allowOrigin(res, req);
           const community = {
             name: req.body.name,
             description: req.body.description,
@@ -115,9 +115,9 @@ router.post('/create', (req, res, next) => {
 
 router.get('/:id/item', (req,res)=>{
   const decoded = Shared.decodeToken(req);
-  Shared.allowOrigin(res);
+  Shared.allowOrigin(res, req);
   if (!isNaN(req.params.id)) {
-    Shared.allowOrigin(res);
+    Shared.allowOrigin(res, req);
     Community.getOneToUpdate(req.params.id, decoded.user_id).then(community => {
       if (community) {
         Item.getByCommunity(req.params.id).then(items => {
@@ -134,9 +134,9 @@ router.get('/:id/item', (req,res)=>{
 
 router.get('/:id/category', (req,res)=>{
   const decoded = Shared.decodeToken(req);
-  Shared.allowOrigin(res);
+  Shared.allowOrigin(res, req);
   if (!isNaN(req.params.id)) {
-    Shared.allowOrigin(res);
+    Shared.allowOrigin(res, req);
     Community.getOneToUpdate(req.params.id, decoded.user_id).then(community => {
       if (community) {
         Item_category.getByCommunity(req.params.id, decoded.user_id).then(items => {
@@ -156,7 +156,7 @@ router.get('/:id/category', (req,res)=>{
 router.patch('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
     const decoded = Shared.decodeToken(req);
-    Shared.allowOrigin(res);
+    Shared.allowOrigin(res, req);
     Community.getOneToUpdate(req.params.id, decoded.user_id).then(community => {
     if (community && community.role > 0) {
       console.log(community);
@@ -190,7 +190,7 @@ router.patch('/:id', (req, res) => {
 router.post('/delete/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
       const decoded = Shared.decodeToken(req);
-      Shared.allowOrigin(res);
+      Shared.allowOrigin(res, req);
       Community.getOneToUpdate(req.params.id, decoded.user_id).then(community => {
       if (community && community.role > 0) {
           Community.delete(req.params.id).then(id => {
@@ -214,7 +214,7 @@ router.post('/delete/:id', (req, res) => {
 
 router.post('/addUser/:id', (req, res, next) => {
   const decoded = Shared.decodeToken(req);
-  Shared.allowOrigin(res);
+  Shared.allowOrigin(res, req);
   const user_id = req.params.id;
   const community_id = req.body.community_id;
   const user_community_add = {
@@ -260,7 +260,7 @@ router.post('/addUser/:id', (req, res, next) => {
 router.post('/removeUser/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
       const decoded = Shared.decodeToken(req);
-      Shared.allowOrigin(res);
+      Shared.allowOrigin(res, req);
       Community.getUserCommunity(decoded.user_id,req.body.community_id).then(auth => {
         Community.getUserCommunity(req.params.id, req.body.community_id).then(user_community => {
           if (user_community) {

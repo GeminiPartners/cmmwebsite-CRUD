@@ -9,7 +9,7 @@ const Shared = require('../shared');
 router.get('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
     const decoded = Shared.decode(req.headers['auth_token']);
-    Shared.allowOrigin(res);
+    Shared.allowOrigin(res, req);
     Item.getOne(req.params.id, decoded.user_id)
     .then(item => {
       console.log('here is our item: ', item)
@@ -67,7 +67,7 @@ function uniq(a) {
 };
 
 router.post('/create', (req, res, next) => {
-  Shared.allowOrigin(res);
+  Shared.allowOrigin(res, req);
   const decoded = Shared.decode(req.headers['auth_token']);
   const item = {
     name: req.body.name,
@@ -104,7 +104,7 @@ router.post('/create', (req, res, next) => {
 
 router.patch('/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
-      Shared.allowOrigin(res);
+      Shared.allowOrigin(res, req);
       const decoded = Shared.decode(req.headers['auth_token']);
       Item.getOneToUpdate(req.params.id, decoded.user_id).then(returned_item => {
       if (returned_item) {
@@ -136,7 +136,7 @@ router.patch('/:id', (req, res) => {
 router.post('/delete/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
     const decoded = Shared.decode(req.headers['auth_token']);
-    Shared.allowOrigin(res);
+    Shared.allowOrigin(res, req);
     Item.getOneToUpdate(req.params.id, decoded.user_id).then(item => {
     if (item) {
         Item.delete(req.params.id, decoded.user_id).then(id => {
@@ -155,7 +155,7 @@ router.post('/delete/:id', (req, res) => {
 
 router.post('/addtocategories/:id', (req, res) => {
   if (!isNaN(req.params.id)) {
-    Shared.allowOrigin(res);
+    Shared.allowOrigin(res, req);
     const decoded = Shared.decode(req.headers['auth_token']);    
     const add_item_categories = req.body.item_categories;
     console.log('these are our ids: ', add_item_categories);

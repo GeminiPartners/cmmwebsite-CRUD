@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "./node_modules/.bin/mocha --reporter spec"
+    "test": "./node_modules/.bin/mocha --recursive --reporter spec"
   },
   "dependencies": {
     "@sendgrid/mail": "^6.4.0",
