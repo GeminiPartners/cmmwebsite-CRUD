@@ -23,6 +23,7 @@
     "morgan": "~1.7.0",
     "nyc": "^14.1.1",
     "pg": "^6.1.2",
+    "pug": "^2.0.4",
     "serve-favicon": "~2.3.0"
   },
   "devDependencies": {

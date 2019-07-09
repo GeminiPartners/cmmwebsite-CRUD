@@ -1,0 +1,12 @@
+extends default
+
+block body
+    form.form(method="POST" action="/auth/signup")
+        .form-group
+            label(for='email') Email:
+            input#email.form-control(type='email' placeholder="hello@world.com" name="email" required)
+            label(for='password') Password:
+            input#password.form-control(type='password' placeholder="your password" name="password" required)
+            label(for='username') Username:
+            input#username.form-control(type='string' placeholder="your name" name="username" required)
+            button.btn.btn-default.btn-success(type="submit") Submit

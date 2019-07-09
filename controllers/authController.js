@@ -4,16 +4,11 @@ const jwt = require('jwt-simple');
 const JWT_SECRET = process.env.JWT_SECRET;
 console.log('secret: ',JWT_SECRET);
 const router = express.Router();
-var authMiddleware = require('./middleware');
 var Shared = require('../shared')
 
-const User = require('../db/user')
+const User = require('../models/userModel')
 
-router.get('/', (req, res) => {
-    res.json({
-        message: 'success'
-    })
-});
+
 
 
 
@@ -61,7 +56,11 @@ function validLogin(user) {
     return validEmail && validPassword 
 }
 
-router.post('/signup', (req, res, next) => {
+exports.viewSignup = function(req, res) {
+    res.render('signup');
+};
+
+exports.postSignup = function(req, res, next)  {
     console.log('sign up: ', req.body)
     if(validUser(req.body)) {
         Shared.allowOrigin(res, req);
@@ -87,10 +86,15 @@ router.post('/signup', (req, res, next) => {
                     User
                         .create(user)
                         .then(id => {
-                            res.json({
-                                id,
-                                message: 'post'
-                                });
+                            if (req.headers.req_type="gmAPI") {
+                                res.json({
+                                    id,
+                                    message: 'post'
+                                    });
+                            } else {
+                                res.render('signup')
+                            }
+                            
                             
                         });
                         res.clearCookie('auth_token');
@@ -107,7 +111,7 @@ router.post('/signup', (req, res, next) => {
         next(new Error('Invalid user'))
     }
 
-});
+};
 
 router.post('/login', (req, res, next) => {
     Shared.allowOrigin(res, req);
@@ -221,4 +225,4 @@ router.get('/login', (req, res, next) => {
     }
 });
 
-module.exports = router;
+

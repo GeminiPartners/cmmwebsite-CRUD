@@ -8,7 +8,7 @@ var cors = require('cors');
 
 var index = require('./routes/index');
 var user = require('./routes/user');
-var auth = require('./auth');
+var auth = require('./routes/auth');
 var item = require('./routes/item');
 var community = require('./routes/community');
 var item_category = require('./routes/item_category');
@@ -19,11 +19,13 @@ var Shared = require('./shared.js')
 var app = express();
 
 require('dotenv-safe').config();
+console.log(process.env.DATABASE_URL)
 
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
+//Use pug to generate views
+app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

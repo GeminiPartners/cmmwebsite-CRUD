@@ -1,14 +1,10 @@
 
 const Item = require('../db/item');
-
-
 const chai = require('chai');
-
 const chaiAsPromised = require('chai-as-promised');
 
 // set up the middleware
 chai.use(chaiAsPromised);
-
 var should = require('chai').should() 
 
 

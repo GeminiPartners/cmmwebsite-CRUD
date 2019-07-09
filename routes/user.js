@@ -44,7 +44,7 @@ router.get('/item', (req,res)=>{
   } else {
     resError(res, 500, "Invalid ID");
   }
-})
+});
 
 router.get('/community', (req, res)=>{
   Shared.allowOrigin(res, req);
@@ -57,7 +57,23 @@ router.get('/community', (req, res)=>{
   } else {
     resError(res, 500, "Invalid ID");
   }
-})
+});
+
+router.post('/delete', (req, res) => {
+  Shared.allowOrigin(res, req);
+
+  const decoded = Shared.decodeToken(req);
+  console.log('req.body')
+  if (!isNaN(decoded.user_id)) {    
+    User
+      .deleteByEmail(req.body.email)
+      .then(response => {
+        res.json({"message" : "item deleted"})
+      })
+    }else {
+    resError(res, 500, "Invalid ID");
+  }
+});
 
 function resError(res, statusCode, message) {
   res.status(statusCode);

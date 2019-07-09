@@ -4,9 +4,9 @@ const jwt = require('jwt-simple');
 const JWT_SECRET = process.env.JWT_SECRET;
 console.log('secret: ',JWT_SECRET);
 const router = express.Router();
-var authMiddleware = require('./middleware');
+// var authMiddleware = require('./middleware');
 var Shared = require('../shared')
-
+const auth_controller = require('../controllers/authController')
 const User = require('../db/user')
 
 router.get('/', (req, res) => {
@@ -61,53 +61,60 @@ function validLogin(user) {
     return validEmail && validPassword 
 }
 
-router.post('/signup', (req, res, next) => {
-    console.log('sign up: ', req.body)
-    if(validUser(req.body)) {
-        Shared.allowOrigin(res, req);
-        User
-            .getOneByEmail(req.body.email)
-            .then(user => {
-                console.log('user', user);
-                if(!user) {
-                    // this is a unique email
-                    // hash password
-                    bcrypt.hash(req.body.password, 10)
-                        .then((hash) => {
-                    // insert user into db
-                    const user = {
-                        email: req.body.email,
-                        username: req.body.username,
-                        location: req.body.location,
-                        instructions_default: req.body.instructions_default,
-                        password: hash,
-                        created_at: new Date()
-                    };
 
-                    User
-                        .create(user)
-                        .then(id => {
-                            res.json({
-                                id,
-                                message: 'post'
-                                });
-                            
-                        });
-                        res.clearCookie('auth_token');
-                    // redirect
-                    });
-                } else {
-                    //email in use
-                    next(new Error('Email in use'));
-                }
 
-            });
+router.get('/signup', auth_controller.viewSignup);
 
-    } else {
-        next(new Error('Invalid user'))
-    }
-
+router.post('/signup', (req, res, next) => {   
+    auth_controller.postSignup(req,res, next)
 });
+
+// router.post('/signup', (req, res, next) => {
+//     if(validUser(req.body)) {
+//         Shared.allowOrigin(res, req);
+//         User
+//             .getOneByEmail(req.body.email)
+//             .then(user => {
+//                 console.log('user', user);
+//                 if(!user) {
+//                     // this is a unique email
+//                     // hash password
+//                     bcrypt.hash(req.body.password, 10)
+//                         .then((hash) => {
+//                     // insert user into db
+//                     const user = {
+//                         email: req.body.email,
+//                         username: req.body.username,
+//                         location: req.body.location,
+//                         instructions_default: req.body.instructions_default,
+//                         password: hash,
+//                         created_at: new Date()
+//                     };
+
+//                     User
+//                         .create(user)
+//                         .then(id => {
+//                             res.json({
+//                                 id,
+//                                 message: 'post'
+//                                 });
+                            
+//                         });
+//                         res.clearCookie('auth_token');
+//                     // redirect
+//                     });
+//                 } else {
+//                     //email in use
+//                     next(new Error('Email in use'));
+//                 }
+
+//             });
+
+//     } else {
+//         next(new Error('Invalid user'))
+//     }
+
+// });
 
 router.post('/login', (req, res, next) => {
     Shared.allowOrigin(res, req);
