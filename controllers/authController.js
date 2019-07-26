@@ -56,11 +56,11 @@ function validLogin(user) {
     return validEmail && validPassword 
 }
 
-exports.viewSignup = function(req, res) {
+viewSignup = function(req, res) {
     res.render('signup');
 };
 
-exports.postSignup = function(req, res, next)  {
+postSignup = function(req, res, next)  {
     console.log('sign up: ', req.body)
     if(validUser(req.body)) {
         Shared.allowOrigin(res, req);
@@ -88,8 +88,8 @@ exports.postSignup = function(req, res, next)  {
                         .then(id => {
                             if (req.headers.req_type="gmAPI") {
                                 res.json({
-                                    id,
-                                    message: 'post'
+                                    "id": id,
+                                    "message": 'post'
                                     });
                             } else {
                                 res.render('signup')
@@ -113,7 +113,11 @@ exports.postSignup = function(req, res, next)  {
 
 };
 
-router.post('/login', (req, res, next) => {
+viewLogin = function(req, res) {
+    res.render('login');
+};
+
+postLogin = function(req, res, next) {
     Shared.allowOrigin(res, req);
     console.log('whats happing?')
     if(validLogin(req.body)) {
@@ -168,61 +172,68 @@ router.post('/login', (req, res, next) => {
     } else {
         next(new Error('Invalid login2'))
     }
-});
+};
 
-router.get('/login', (req, res, next) => {
-    Shared.allowOrigin(res, req);
-    if(validLogin(req.body)) {
-        console.log(req.body);
-        User
-            .getOneByEmail(req.body.email)
-            .then(user => {
-                if(user) {
-                    bcrypt
-                        .compare(req.body.password, user.password)
-                        .then((result) => {
-                            // If the passwords matched
-                            if(result) {
-                                // setting the 'set-cookie header
-                                const token = jwt.encode(
-                                    {
-                                    'user_id': user.id,
-                                    'is_active': user.is_active
-                                    },
-                                    JWT_SECRET);
-                                // setUserIdCookie(req, res, user.id);                                
-                                const isSecure = req.app.get('env') !='development';
-                                res.cookie('user_id', user.id, {
-                                    httpOnly: true,
-                                    secure: isSecure,
-                                    signed: true
-                                });
+// router.get('/login', (req, res, next) => {
+//     Shared.allowOrigin(res, req);
+//     if(validLogin(req.body)) {
+//         console.log(req.body);
+//         User
+//             .getOneByEmail(req.body.email)
+//             .then(user => {
+//                 if(user) {
+//                     bcrypt
+//                         .compare(req.body.password, user.password)
+//                         .then((result) => {
+//                             // If the passwords matched
+//                             if(result) {
+//                                 // setting the 'set-cookie header
+//                                 const token = jwt.encode(
+//                                     {
+//                                     'user_id': user.id,
+//                                     'is_active': user.is_active
+//                                     },
+//                                     JWT_SECRET);
+//                                 // setUserIdCookie(req, res, user.id);                                
+//                                 const isSecure = req.app.get('env') !='development';
+//                                 res.cookie('user_id', user.id, {
+//                                     httpOnly: true,
+//                                     secure: isSecure,
+//                                     signed: true
+//                                 });
 
-                                // setUserIdToken(req, res, token); 
-                                res.cookie('auth_token', token, {
-                                    httpOnly: true,
-                                    secure: isSecure,
-                                    signed: true
-                                });
+//                                 // setUserIdToken(req, res, token); 
+//                                 res.cookie('auth_token', token, {
+//                                     httpOnly: true,
+//                                     secure: isSecure,
+//                                     signed: true
+//                                 });
 
 
-                                res.json({
-                                    id: user.id,
-                                    message: 'Logged in!',
-                                    'token': token
-                                });
+//                                 res.json({
+//                                     id: user.id,
+//                                     message: 'Logged in!',
+//                                     'token': token
+//                                 });
                                 
-                            } else {
-                                next(new Error('Invalid login3'));
-                            }
-                        });
-                } else {
-                    next(new Error('Invalid login1'));
-                }               
-            });
-    } else {
-        next(new Error('Invalid login2'))
-    }
-});
+//                             } else {
+//                                 next(new Error('Invalid login3'));
+//                             }
+//                         });
+//                 } else {
+//                     next(new Error('Invalid login1'));
+//                 }               
+//             });
+//     } else {
+//         next(new Error('Invalid login2'))
+//     }
+// });
 
-
+module.exports = {
+    viewSignup,
+    postSignup,
+    viewLogin,
+    postLogin,
+    validUser,
+    validLogin
+}

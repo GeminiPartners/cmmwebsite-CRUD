@@ -69,6 +69,13 @@ router.post('/signup', (req, res, next) => {
     auth_controller.postSignup(req,res, next)
 });
 
+
+router.get('/login', auth_controller.viewLogin);
+
+router.post('/login', (req, res, next) => {   
+    auth_controller.postLogin(req,res, next)
+});
+
 // router.post('/signup', (req, res, next) => {
 //     if(validUser(req.body)) {
 //         Shared.allowOrigin(res, req);
@@ -116,116 +123,116 @@ router.post('/signup', (req, res, next) => {
 
 // });
 
-router.post('/login', (req, res, next) => {
-    Shared.allowOrigin(res, req);
-    console.log('whats happing?')
-    if(validLogin(req.body)) {
-        console.log(req.body);
-        User
-            .getOneByEmail(req.body.email)
-            .then(user => {
-                if(user) {
-                    bcrypt
-                        .compare(req.body.password, user.password)
-                        .then((result) => {
-                            // If the passwords matched
-                            if(result) {
-                                // setting the 'set-cookie header
-                                res.clearCookie('auth_token');
-                                const token = jwt.encode(
-                                    {
-                                    'user_id': user.id,
-                                    'is_active': user.is_active
-                                    },
-                                    JWT_SECRET);
-                                // setUserIdCookie(req, res, user.id);                                
-                                const isSecure = req.app.get('env') !='development';
-                                res.cookie('user_id', user.id, {
-                                    httpOnly: true,
-                                    secure: isSecure,
-                                    signed: true
-                                });
+// router.post('/login', (req, res, next) => {
+//     Shared.allowOrigin(res, req);
+//     console.log('whats happing?')
+//     if(validLogin(req.body)) {
+//         console.log(req.body);
+//         User
+//             .getOneByEmail(req.body.email)
+//             .then(user => {
+//                 if(user) {
+//                     bcrypt
+//                         .compare(req.body.password, user.password)
+//                         .then((result) => {
+//                             // If the passwords matched
+//                             if(result) {
+//                                 // setting the 'set-cookie header
+//                                 res.clearCookie('auth_token');
+//                                 const token = jwt.encode(
+//                                     {
+//                                     'user_id': user.id,
+//                                     'is_active': user.is_active
+//                                     },
+//                                     JWT_SECRET);
+//                                 // setUserIdCookie(req, res, user.id);                                
+//                                 const isSecure = req.app.get('env') !='development';
+//                                 res.cookie('user_id', user.id, {
+//                                     httpOnly: true,
+//                                     secure: isSecure,
+//                                     signed: true
+//                                 });
 
-                                // setUserIdToken(req, res, token); 
-                                res.cookie('auth_token', token, {
-                                    httpOnly: true,
-                                    secure: isSecure,
-                                    signed: true
-                                });
+//                                 // setUserIdToken(req, res, token); 
+//                                 res.cookie('auth_token', token, {
+//                                     httpOnly: true,
+//                                     secure: isSecure,
+//                                     signed: true
+//                                 });
 
 
-                                res.json({
-                                    id: user.id,
-                                    message: 'Logged in!',
-                                    'token': token
-                                });
+//                                 res.json({
+//                                     id: user.id,
+//                                     message: 'Logged in!',
+//                                     'token': token
+//                                 });
                                 
-                            } else {
-                                next(new Error('Invalid login3'));
-                            }
-                        });
-                } else {
-                    next(new Error('Invalid login1'));
-                }               
-            });
-    } else {
-        next(new Error('Invalid login2'))
-    }
-});
+//                             } else {
+//                                 next(new Error('Invalid login3'));
+//                             }
+//                         });
+//                 } else {
+//                     next(new Error('Invalid login1'));
+//                 }               
+//             });
+//     } else {
+//         next(new Error('Invalid login2'))
+//     }
+// });
 
-router.get('/login', (req, res, next) => {
-    Shared.allowOrigin(res, req);
-    if(validLogin(req.body)) {
-        console.log(req.body);
-        User
-            .getOneByEmail(req.body.email)
-            .then(user => {
-                if(user) {
-                    bcrypt
-                        .compare(req.body.password, user.password)
-                        .then((result) => {
-                            // If the passwords matched
-                            if(result) {
-                                // setting the 'set-cookie header
-                                const token = jwt.encode(
-                                    {
-                                    'user_id': user.id,
-                                    'is_active': user.is_active
-                                    },
-                                    JWT_SECRET);
-                                // setUserIdCookie(req, res, user.id);                                
-                                const isSecure = req.app.get('env') !='development';
-                                res.cookie('user_id', user.id, {
-                                    httpOnly: true,
-                                    secure: isSecure,
-                                    signed: true
-                                });
+// router.get('/login', (req, res, next) => {
+//     Shared.allowOrigin(res, req);
+//     if(validLogin(req.body)) {
+//         console.log(req.body);
+//         User
+//             .getOneByEmail(req.body.email)
+//             .then(user => {
+//                 if(user) {
+//                     bcrypt
+//                         .compare(req.body.password, user.password)
+//                         .then((result) => {
+//                             // If the passwords matched
+//                             if(result) {
+//                                 // setting the 'set-cookie header
+//                                 const token = jwt.encode(
+//                                     {
+//                                     'user_id': user.id,
+//                                     'is_active': user.is_active
+//                                     },
+//                                     JWT_SECRET);
+//                                 // setUserIdCookie(req, res, user.id);                                
+//                                 const isSecure = req.app.get('env') !='development';
+//                                 res.cookie('user_id', user.id, {
+//                                     httpOnly: true,
+//                                     secure: isSecure,
+//                                     signed: true
+//                                 });
 
-                                // setUserIdToken(req, res, token); 
-                                res.cookie('auth_token', token, {
-                                    httpOnly: true,
-                                    secure: isSecure,
-                                    signed: true
-                                });
+//                                 // setUserIdToken(req, res, token); 
+//                                 res.cookie('auth_token', token, {
+//                                     httpOnly: true,
+//                                     secure: isSecure,
+//                                     signed: true
+//                                 });
 
 
-                                res.json({
-                                    id: user.id,
-                                    message: 'Logged in!',
-                                    'token': token
-                                });
+//                                 res.json({
+//                                     id: user.id,
+//                                     message: 'Logged in!',
+//                                     'token': token
+//                                 });
                                 
-                            } else {
-                                next(new Error('Invalid login3'));
-                            }
-                        });
-                } else {
-                    next(new Error('Invalid login1'));
-                }               
-            });
-    } else {
-        next(new Error('Invalid login2'))
-    }
-});
+//                             } else {
+//                                 next(new Error('Invalid login3'));
+//                             }
+//                         });
+//                 } else {
+//                     next(new Error('Invalid login1'));
+//                 }               
+//             });
+//     } else {
+//         next(new Error('Invalid login2'))
+//     }
+// });
 
 module.exports = router;

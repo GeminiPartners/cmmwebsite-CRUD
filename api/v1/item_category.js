@@ -3,8 +3,8 @@ const router = express.Router();
 // const Item = require('../db/item');
 // const Community = require('../db/community');
 // const Item_category = require('../db/item_category');
-const Shared = require('../shared');
-const item_category_controller = require('../controllers/item_categoryController')
+// const Shared = require('../shared');
+const item_category_controller = require('../../controllers/item_categoryController')
 
 
 

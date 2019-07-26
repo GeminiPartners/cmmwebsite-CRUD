@@ -12,6 +12,7 @@ var auth = require('./routes/auth');
 var item = require('./routes/item');
 var community = require('./routes/community');
 var item_category = require('./routes/item_category');
+var api = require('./api/index')
 
 var authMiddleware = require('./auth/middleware');
 var Shared = require('./shared.js')
@@ -40,6 +41,7 @@ app.use(cors({
 
 app.use('/auth', auth);
 app.use('/', index);
+app.use('/api', api);
 app.use('/user', authMiddleware.ensureLoggedIn, user); // authMiddleware.ensureLoggedIn,
 app.use('/item', authMiddleware.ensureLoggedIn, item); // authMiddleware.ensureLoggedIn,
 app.use('/community', authMiddleware.ensureLoggedIn, community); // authMiddleware.ensureLoggedIn,
