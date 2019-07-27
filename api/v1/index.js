@@ -9,6 +9,8 @@ var cors = require('cors');
 
 const item = require('./item');
 const item_category = require('./item_category');
+const community = require('./community')
+const user = require('./user')
 
 // var authMiddleware = require('./auth/middleware');
 // var Shared = require('./shared.js')
@@ -38,5 +40,7 @@ app.use(cors({
 
 app.use('/item', item);
 app.use('/item_category', item_category);
+app.use('/community', community);
+app.use('/user', user);
 
 module.exports = app

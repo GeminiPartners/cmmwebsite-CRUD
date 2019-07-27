@@ -3,10 +3,10 @@ const router = express.Router();
 // const User = require('../db/user');
 // const Community = require('../db/community');
 // const Item = require('../db/item');
-const Shared = require('../shared');
+const Shared = require('../../shared');
 // const jwt = require('jwt-simple');
 // const JWT_SECRET = "kittens"; //change to environment variable
-const user_controller = require('../controllers/userController')
+const user_controller = require('../../controllers/userController')
 
 function decodeToken(req) {
   if (req.headers['auth_token']) {
