@@ -5,11 +5,9 @@ exports.up = function(knex, Promise) {
     table.text('email').unique().notNullable();
     table.text('username').notNullable();
     table.text('password').notNullable();
-    table.datetime('created_at').notNullable();
+    table.datetime('created_at').notNullable().defaultTo(knex.fn.now(6));
     table.datetime('updated_at').notNullable().defaultTo(knex.fn.now(6));
     table.boolean('is_active').notNullable().defaultTo(true);
-    table.text('location');
-    table.text('instructions_default');
   });
 };
 
