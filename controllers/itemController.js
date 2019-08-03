@@ -69,40 +69,27 @@ function createItem(req, res, next) {
   Shared.allowOrigin(res, req);
   const decoded = Shared.decode(req.headers['auth_token']);
   const item = {
-    name: req.body.name,
-    description: req.body.description,
-    instructions: req.body.instructions,
-    default_instructions_suppress: req.body.default_instructions_suppress
-  }  ;
-  const add_item_categories = req.body.item_categories;
+    itemname: req.body.itemname,
+    itemdescription: req.body.itemdescription,
+    itemtype_id: req.body.itemtype_id,
+    price: req.body.price,
+    fields: req.body.customfields
+  };
+  
  
-  Item_category.getByUser(decoded.user_id)
-  .then(item_categories => {
-    if(item_categories){
-        return validCategories(item_categories, req.body.item_categories)
-    } else {
-        throw new Error('No item_categories specified!') 
-    }
-    
-  })
-  .then(categories_are_valid => {
-    console.log('valid cats returned: ', categories_are_valid)
-      if (categories_are_valid) {
-        return validItem(item);
-        console.log('item in categories: ',item)
-      } else throw new Error('Invalid category!');  })
-  .then(item_is_valid => {
-      if (item_is_valid) {
-        return Item.create(item, uniq(add_item_categories), decoded.user_id);
-      } else throw new Error('Invalid item!') 
-  }).then(ids => {
-    res.json({"message" : "Item created!"})
-  })
-  .catch(err => {
-    console.log(err, err.message)
-    resError(res, 404, err.message);
-  });
-};
+  // if (item_is_valid) {
+  //       return 
+  // } else throw new Error('Invalid item!')}
+  Item
+    .create(item, decoded.user_id)
+    .then(ids => {
+      res.json({"message" : "Item created!", "id": ids[0]})
+    })
+    .catch(err => {
+      console.log(err, err.message)
+      resError(res, 404, err.message);
+    });
+  };
 
 function updateItem (req, res) {
   if (!isNaN(req.params.id)) {

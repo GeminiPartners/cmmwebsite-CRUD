@@ -4,17 +4,12 @@ exports.seed = (knex, Promise) => {
         const datefieldinstances = [{
           datefield_id: 4,
           datefieldvalue: new Date(1972-01-31),
-          datefielditem_id: 3,
+          datefielditem_id: 1,
           created_at: new Date()
         }, {
           datefield_id: 4,
           datefieldvalue: new Date(1982-01-31),
-          datefielditem_id: 3,
-          created_at: new Date()
-        }, {
-          datefield_id: 4,
-          datefieldvalue: new Date(1982-01-31),
-          datefielditem_id: 3,
+          datefielditem_id: 2,
           created_at: new Date()
         }];
 

@@ -4,10 +4,12 @@ const environment = process.env.NODE_ENV || 'development';
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const chaiInteger = require('chai-integer');
 
 // set up the assertion library
 chai.use(chaiAsPromised);
-var should = require('chai').should() 
+chai.use(chaiInteger)
+const should = require('chai').should() 
 
 //require modules to be tested
 const User = require('../../../models/userModel');
@@ -23,8 +25,7 @@ describe('Unit : Models.userModel.create', function() {
     const newUser = {
         email: "newTest41@newTest.com",
         username: "my new test41",
-        password: "123456",
-        location: "here"
+        password: "123456"
     };
     after(function() {
         return User
@@ -35,7 +36,7 @@ describe('Unit : Models.userModel.create', function() {
         .catch(error => {
             return(error)
         })
-    })        
+    });        
     context('Create new valid user', function() {
         it('should return a success message', function() {
             return User.create(newUser).should.eventually.be.a('number')

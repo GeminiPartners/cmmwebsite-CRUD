@@ -48,7 +48,7 @@ exports.seed = (knex, Promise) => {
           fielddescription: 'The width of sky, in angular terms, that is presented to your eye ',
           fielditemtype_id: 2,
           fielddatatype:2,
-          fieldorder: 1,
+          fieldorder: 2,
           created_at: new Date()
         }];
 

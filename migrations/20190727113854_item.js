@@ -6,6 +6,7 @@ exports.up = function(knex, Promise) {
         table.integer('itemtype_id').notNullable().references('itemtype.id').unsigned().onDelete('cascade');
         table.integer('owner_id').notNullable().references('user.id').unsigned().onDelete('cascade');
         table.decimal('price');
+        table.jsonb('fields')
         table.datetime('created_at').notNullable().defaultTo(knex.fn.now(6));
         table.datetime('updated_at').notNullable().defaultTo(knex.fn.now(6));
       });
