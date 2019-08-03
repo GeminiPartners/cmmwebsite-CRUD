@@ -83,6 +83,7 @@ function createItem(req, res, next) {
   Item
     .create(item, decoded.user_id)
     .then(ids => {
+      console.log('controller ids: ',ids)
       res.json({"message" : "Item created!", "id": ids[0]})
     })
     .catch(err => {

@@ -28,7 +28,7 @@ module.exports = {
       owner_id: add_user_id,
       created_at: new Date()
     }
-    knex('item').insert(add_item, 'id')
+    return knex('item').insert(add_item, 'id')
       .then(ids => {
         amqp.connect(connString, function(error0, connection) {
           if (error0) {
@@ -52,9 +52,12 @@ module.exports = {
           });
           setTimeout(function() {
               connection.close();
-              process.exit(0);
+              // process.exit(0);
           }, 500);
+          console.log(ids)
+          
       });
+      return ids
       })
       // .then (ids => {     
       //   var item_category_items = [];
