@@ -18,6 +18,7 @@ var authMiddleware = require('./auth/middleware');
 var Shared = require('./shared.js')
 
 var app = express();
+const Item = require('./models/itemModel')
 
 require('dotenv-safe').config();
 console.log(process.env.DATABASE_URL)
@@ -95,9 +96,19 @@ amqp.connect(connString, function(error0, connection) {
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
 
         channel.consume(queue, function(msg) {
-            let msgObj = JSON.parse(msg.content)
-
-            console.log(" [x] Received %s", msgObj.action);
+          let msgObj = JSON.parse(msg.content)
+          console.log(" [x] Received %s", msgObj.action);
+          switch(msgObj.action) {
+            case "loadItemFields":
+              console.log('about to upd cust field ')
+              Item.updateCustomFields(msgObj.item_id) 
+              break;
+            case y:
+              // code block
+              break;
+            default:
+              // code block
+          }
         }, {
             noAck: true
         });
