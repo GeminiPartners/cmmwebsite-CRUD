@@ -84,37 +84,60 @@ module.exports = {
       return ids;
     });
   },
-  updateCustomFields: function(id){
-    async.parallel([
-      function(callback) {
-          CustomFields.deleteFieldInstances(id)
-          .then(result => {
-              callback(null, result)
-          })            
-      }
-    ],
-    function(err, results) {
-      console.log(results);
-      // the results array will equal [1, 2] even though
-      // the second function had a shorter timeout.
-    });
+  updateCustomFields: function(id){    
+    // Take all of the custom fields from an item's custom fields column and update the custom fields tables
+    // to match.
     console.log('about to get Item ', id)
-    return knex('item').where({'id' : id}).first()
-      .then(item => {
+    const deleteFields = CustomFields.deleteFieldInstances(id);
+    const returnItem = knex('item').where({'id' : id}).first()
+    return Promise
+      .all([deleteFields, returnItem])
+      .then(results => {
+        console.log('results of promise dete return: ', results)
+        item = results[1]
+        let textFields = []
+        let numberFields = []
+        let dateFields = []
         item.fields.forEach(field => {
           switch(field.fielddatatype) {
             case 0:
               console.log('Text field Name: ', field.fieldname, ' value: ', field.value) 
+              textField = {
+                textfield_id: field.id,
+                textfieldvalue: field.value,
+                textfielditem_id: id
+              }
+              textFields.push(textField)
+              console.log('text field example: ', item)
               break;
             case 1:
               console.log('Number field Name: ', field.fieldname, ' value: ', field.value) 
+              numberField = {
+                numberfield_id: field.id,
+                numberfieldvalue: field.value,
+                numberfielditem_id: id
+              }
+              numberFields.push(numberField)
               break;
             case 2:
               console.log('Date field Name: ', field.fieldname, ' value: ', field.value) 
+              dateField = {
+                datefield_id: field.id,
+                datefieldvalue: field.value,
+                datefielditem_id: id
+              }
+              dateFields.push(dateField)
             default:
               // code block
           }
         });
+        const addTextFields = CustomFields.addTextFieldInstance(textFields[0]);
+        const addNumberFields = CustomFields.addNumberFieldInstance(numberFields[0]);
+        const addDateFields = CustomFields.addDateFieldInstance(dateFields[0])
+
+        return Promise
+          .all([addTextFields, addNumberFields, addDateFields])
+
       })
   },
   validItem: function(item, user_id) {
