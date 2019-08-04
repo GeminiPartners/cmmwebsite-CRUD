@@ -13,31 +13,16 @@ module.exports = {
                 return results
             })
     },
-    addTextFieldInstance: function(field) {
-        const addField = {
-            textfield_id: field.textfield_id,
-            textfieldvalue: field.textfieldvalue,
-            textfielditem_id: field.textfielditem_id,
-            created_at: new Date()
-        }
-        return knex('textfieldinstance').insert(addField, 'id')
+    addTextFieldInstance: function(fields) {        
+        
+        return knex('textfieldinstance').insert(fields, 'id')
     },
-    addNumberFieldInstance: function(field) {
-        const addField = {
-            numberfield_id: field.numberfield_id,
-            numberfieldvalue: field.numberfieldvalue,
-            numberfielditem_id: field.numberfielditem_id,
-            created_at: new Date()
-        }
-        return knex('numberfieldinstance').insert(addField, 'id')
+    addNumberFieldInstance: function(fields) {
+
+        return knex('numberfieldinstance').insert(fields, 'id')
     },
-    addDateFieldInstance: function(field) {
-        const addField = {
-            datefield_id: field.datefield_id,
-            datefieldvalue: field.datefieldvalue,
-            datefielditem_id: field.datefielditem_id,
-            created_at: new Date()
-        }
-        return knex('datefieldinstance').insert(addField, 'id')
+    addDateFieldInstance: function(fields) {
+ 
+        return knex('datefieldinstance').insert(fields, 'id')
     }
 }

@@ -131,9 +131,9 @@ module.exports = {
               // code block
           }
         });
-        const addTextFields = CustomFields.addTextFieldInstance(textFields[0]);
-        const addNumberFields = CustomFields.addNumberFieldInstance(numberFields[0]);
-        const addDateFields = CustomFields.addDateFieldInstance(dateFields[0])
+        const addTextFields = CustomFields.addTextFieldInstance(textFields);
+        const addNumberFields = CustomFields.addNumberFieldInstance(numberFields);
+        const addDateFields = CustomFields.addDateFieldInstance(dateFields)
 
         return Promise
           .all([addTextFields, addNumberFields, addDateFields])
