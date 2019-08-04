@@ -55,7 +55,7 @@ module.exports = {
               connection.close();
               // process.exit(0);
           }, 500);
-          console.log(ids)          
+          console.log('IDs logged by Item Create: ', ids)          
       });
       return ids
       })

@@ -112,34 +112,53 @@ describe('Unit: Item.update', function() {
 
 describe('Unit: CustomField.deleteFieldInstances', function() {
   const newItem = {
-      itemname: "She Hulk 127",
-      itemdescription: "A She-hulk comic",
+      itemname: "Ghost Rider 44",
+      itemdescription: "A Ghost Rider comic",
       itemtype_id: 1,
-      price: 15.25
-  }
-  const updateItem = {
-      itemname: "NEW: She Hulk 127",
-      itemdescription: "NEW: A She-hulk comic",
-      price: 25.25
-  }
+      price: 15.22
+  };
+  const newTextField = {
+    textfield_id: 1,
+    textfieldvalue: "My test2"
+  };
+  const newNumberField = {
+    numberfield_id: 2,
+    numberfieldvalue: 778
+  };
+  const newDateField = {
+    datefield_id: 4,
+    datefieldvalue: "2018-02-01"
+  };
+  newItemID = 0;
   context('Where fields exist', function() {
-    const itemID= 1;
-    // after(function() {
-    //   return Item
-    //   .getOneByName(newItem.itemname)
-    //   .then(item => {
-    //       Item.delete(item.id, owner_id)
-    //   })
-    //   .then(response => {
-    //       return response
-    //   })
-    //   .catch(error => {
-    //       return(error)
-    //   })
-    // })   
+    
+    before(function() {
+      return Item
+      .create(newItem, 1)
+      .then(id => {
+        console.log('the ID for the new item is:', id)
+        newItemID = id[0];
+        newTextField.textfielditem_id = newItemID;
+        newNumberField.numberfielditem_id = newItemID;
+        newDateField.datefielditem_id = newItemID;
+        return CustomField.addTextFieldInstance(newTextField)      
+      })
+      .then(result => {
+        console.log('The result of the first textfield', result)
+        return CustomField.addNumberFieldInstance(newNumberField)
+      })
+      .then(result => {CustomField.addDateFieldInstance})
+      .then(response => {
+        console.log('response for the creation of fields: ', response)
+          return response
+      })
+      .catch(error => {
+          return(error)
+      })
+    })   
     it('should delete the fields for the specified item', function() {
       return CustomField
-      .deleteFieldInstances(itemID)
+      .deleteFieldInstances(newItemID)
       .then(results => {
         console.log('test results of delete: ', results)
         results[0].should.equal(1);          
@@ -156,19 +175,7 @@ describe('Unit: CustomField.addTextFieldInstance', function() {
   }
 
   context('With valid field info', function() {
-    // after(function() {
-    //   return Item
-    //   .getOneByName(newItem.itemname)
-    //   .then(item => {
-    //       Item.delete(item.id, owner_id)
-    //   })
-    //   .then(response => {
-    //       return response
-    //   })
-    //   .catch(error => {
-    //       return(error)
-    //   })
-    // })   
+
     it('should add a text item and receive an ID', function() {
       return CustomField
       .addTextFieldInstance(newTextField)
@@ -188,19 +195,7 @@ describe('Unit: CustomField.addNumberFieldInstance', function() {
   }
 
   context('With valid field info', function() {
-    // after(function() {
-    //   return Item
-    //   .getOneByName(newItem.itemname)
-    //   .then(item => {
-    //       Item.delete(item.id, owner_id)
-    //   })
-    //   .then(response => {
-    //       return response
-    //   })
-    //   .catch(error => {
-    //       return(error)
-    //   })
-    // })   
+
     it('should add a text item and receive an ID', function() {
       return CustomField
       .addNumberFieldInstance(newNumberField)
@@ -220,19 +215,7 @@ describe('Unit: CustomField.addDateFieldInstance', function() {
   }
 
   context('With valid field info', function() {
-    // after(function() {
-    //   return Item
-    //   .getOneByName(newItem.itemname)
-    //   .then(item => {
-    //       Item.delete(item.id, owner_id)
-    //   })
-    //   .then(response => {
-    //       return response
-    //   })
-    //   .catch(error => {
-    //       return(error)
-    //   })
-    // })   
+
     it('should add a text item and receive an ID', function() {
       return CustomField
       .addDateFieldInstance(newDateField)
