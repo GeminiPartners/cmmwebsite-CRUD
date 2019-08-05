@@ -8,7 +8,8 @@ var cors = require('cors');
 
 
 const item = require('./item');
-const item_category = require('./item_category');
+const itemtype = require('./itemtype');
+const itemtypefield = require('./itemtypefield');
 const community = require('./community')
 const user = require('./user')
 
@@ -39,7 +40,8 @@ app.use(cors({
 
 
 app.use('/item', item);
-app.use('/item_category', item_category);
+app.use('/itemtype', itemtype);
+app.use('/itemtypefield', itemtypefield);
 app.use('/community', community);
 app.use('/user', user);
 

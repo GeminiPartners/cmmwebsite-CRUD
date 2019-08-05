@@ -5,13 +5,13 @@ exports.seed = (knex, Promise) => {
           itemtypename: 'Comics',
           itemtypedescription: 'Single issue comic books',
           itemtypeorder:0,
-          itemmarket:1,
+          itemtypemarket:1,
           created_at: new Date()
         }, {
           itemtypename: 'Eyepieces',
           itemtypedescription: 'Eyepiece lenses for telescopes',
           itemtypeorder:0,
-          itemmarket:2,
+          itemtypemarket:2,
           created_at: new Date()
         }];
 
