@@ -87,10 +87,10 @@ amqp.connect(connString, function(error0, connection) {
             throw error1;
         }
 
-        var queue = 'hello';
+        var queue = 'task_queue';
 
         channel.assertQueue(queue, {
-            durable: false
+            durable: true
         });
 
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
@@ -101,7 +101,14 @@ amqp.connect(connString, function(error0, connection) {
           switch(msgObj.action) {
             case "loadItemFields":
               console.log('about to upd cust field ')
-              Item.updateCustomFields(msgObj.item_id) 
+              Item
+                .updateCustomFields(msgObj.item_id)
+                .then(results => {
+                  return channel.ack(msg)
+                })
+                .catch(error =>{
+                  console.log(error)
+                })
               break;
             case y:
               // code block
@@ -110,7 +117,7 @@ amqp.connect(connString, function(error0, connection) {
               // code block
           }
         }, {
-            noAck: true
+            noAck: false
         });
     });
 });

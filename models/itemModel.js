@@ -40,14 +40,16 @@ module.exports = {
                   throw error1;
               }
       
-              const queue = 'hello';
+              const queue = 'task_queue';
               const msgObj = {action: 'loadItemFields', item_id: ids[0]};
               const msg = JSON.stringify(msgObj)
       
               channel.assertQueue(queue, {
-                  durable: false
+                  durable: true
               });
-              channel.sendToQueue(queue, Buffer.from(msg));
+              channel.sendToQueue(queue, Buffer.from(msg), {
+                persistent: true
+              });
       
               console.log(" [x] Sent %s", msg);
           });

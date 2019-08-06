@@ -45,10 +45,10 @@ function getItemtypefieldsByItemtype(req, res) {
 
 
 
-function validItemType(itemtype) {
+function validItemtypeField(itemtypeField) {
   console.log('here is the item: ',item);
-    const validName = itemtype.itemtypename.trim() != '';
-    const validDescription = itemtype.itemtypedescription.trim() != '';     
+    const validName = itemtypefield.itemtypefieldname.trim() != '';
+    const validDescription = itemtypefield.itemtypefielddescription.trim() != '';     
     console.log('validItem func: ', validName, validDescription)
     return validName && validDescription 
 };
@@ -59,23 +59,19 @@ function uniq(a) {
   })
 };
 
-function createItemtype(req, res, next) {
+function createItemtypeFields(req, res, next) {
   Shared.allowOrigin(res, req);
   const decoded = Shared.decode(req.headers['auth_token']);
   console.log('body of request: ', req.body)
-  const itemtype = {
-    itemtypename: req.body.itemtypename,
-    itemtypedescription: req.body.itemtypedescription,
-    itemtypeorder: req.body.itemtypeorder,
-    itemtypemarket: req.body.itemtypemarket
-  };
+  let itemtypeFields = []
+  const bodyfields = req.body.fields;  
   
  
   // if (item_is_valid) {
   //       return 
   // } else throw new Error('Invalid item!')}
-  Itemtype
-    .create(itemtype, decoded.user_id)
+  Itemtypefield
+    .create(bodyfields, decoded.user_id)
     .then(ids => {
       console.log('controller ids: ',ids)
       res.json({"message" : "Itemtype created!", "id": ids})
@@ -184,5 +180,6 @@ function resError(res, statusCode, message) {
 
 module.exports = {
     getItemtypefield,
-    getItemtypefieldsByItemtype
+    getItemtypefieldsByItemtype,
+    createItemtypeFields
 }

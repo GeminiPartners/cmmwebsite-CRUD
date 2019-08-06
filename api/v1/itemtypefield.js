@@ -13,9 +13,9 @@ router.get('/itemtype/:id', (req, res) => {
     itemtypefield_controller.getItemtypefieldsByItemtype(req,res)
 });
 
-// router.post('/create', (req, res, next) => {
-//   itemtype_controller.createItemtype(req, res, next)
-// });
+router.post('/create', (req, res, next) => {
+  itemtypefield_controller.createItemtypeFields(req, res, next)
+});
 
 // router.patch('/:id', (req, res) => {
 //  item_controller.updateItem(req, res)
