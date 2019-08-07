@@ -68,23 +68,28 @@ function uniq(a) {
 function createItem(req, res, next) {
   Shared.allowOrigin(res, req);
   const decoded = Shared.decode(req.headers['auth_token']);
-  const item = {
-    itemname: req.body.itemname,
-    itemdescription: req.body.itemdescription,
-    itemtype_id: req.body.itemtype_id,
-    price: req.body.price,
-    fields: req.body.customfields
-  };
+  let items = req.body.items
+  items.forEach(item => {
+    item.owner_id = decoded.user_id;
+    item.fields = JSON.stringify(item.fields)
+  })
+  // {
+    // itemname: req.body.itemname,
+    // itemdescription: req.body.itemdescription,
+    // itemtype_id: req.body.itemtype_id,
+    // price: req.body.price,
+    // fields: req.body.customfields
+  // };
   
  
   // if (item_is_valid) {
   //       return 
   // } else throw new Error('Invalid item!')}
   Item
-    .create(item, decoded.user_id)
+    .create(items, decoded.user_id)
     .then(ids => {
       console.log('controller ids: ',ids)
-      res.json({"message" : "Item created!", "id": ids[0]})
+      res.json({"message" : "Item created!", "ids": ids})
     })
     .catch(err => {
       console.log(err, err.message)

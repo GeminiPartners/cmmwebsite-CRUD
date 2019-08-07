@@ -1,15 +1,15 @@
 const knex = require('./connection');
 
 module.exports = {
-    deleteFieldInstances: function(id) {    
-        const textResults = knex('textfieldinstance').where({'textfielditem_id' : id}).del()
-        const numberResults = knex('numberfieldinstance').where({'numberfielditem_id' : id}).del()
-        const dateResults = knex('datefieldinstance').where({'datefielditem_id' : id}).del()
-         
+    deleteFieldInstances: function(ids) {    
+        const textResults = knex('textfieldinstance').whereIn('textfielditem_id', ids).del()
+        const numberResults = knex('numberfieldinstance').whereIn('numberfielditem_id', ids).del()
+        const dateResults = knex('datefieldinstance').whereIn('datefielditem_id', ids).del()
+        
         return Promise
             .all([textResults, numberResults, dateResults])
             .then(results => {
-                console.log(results)
+                console.log('deleted fields: ',results)
                 return results
             })
     },

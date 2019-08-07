@@ -19,18 +19,15 @@ module.exports = {
   getOneToUpdate: function (id, user_id) {
     return knex('item').where({'id' : id, 'owner_id': user_id}).first();
   },
-  create: function(item,  add_user_id) {
-    const add_item = {
-      itemname: item.itemname,
-      itemdescription: item.itemdescription,
-      itemtype_id: item.itemtype_id,
-      price: item.price,
-      fields: JSON.stringify(item.fields),
-      owner_id: add_user_id,
-      created_at: new Date()
-    }
-    return knex('item').insert(add_item, 'id')
+  create: function(items,  add_user_id) {
+
+    return knex('item').insert(items, 'id')
       .then(ids => {
+        let itemfields = []
+        let i = 0;
+        for (i = 0; i < items.length; i++) { 
+          itemfields.push({id: ids[i], fields: items[i].fields});
+}
         amqp.connect(connString, function(error0, connection) {
           if (error0) {
               throw error0;
@@ -41,7 +38,7 @@ module.exports = {
               }
       
               const queue = 'task_queue';
-              const msgObj = {action: 'loadItemFields', item_id: ids[0]};
+              const msgObj = {action: 'loadItemFields', item_fields: itemfields};
               const msg = JSON.stringify(msgObj)
       
               channel.assertQueue(queue, {
@@ -86,53 +83,61 @@ module.exports = {
       return ids;
     });
   },
-  updateCustomFields: function(id){    
+  updateCustomFields: function(item_fields){    
     // Take all of the custom fields from an item's custom fields column and update the custom fields tables
     // to match.
-    console.log('about to get Item ', id)
-    const deleteFields = CustomFields.deleteFieldInstances(id);
-    const returnItem = knex('item').where({'id' : id}).first()
-    return Promise
-      .all([deleteFields, returnItem])
+    console.log('about to get Item ', item_fields)
+    let ids = []
+    item_fields.forEach(item => {
+      ids.push(item.id)
+    })
+    console.log('ids extracted from item_fields: ', ids)
+    CustomFields
+      .deleteFieldInstances(ids)
       .then(results => {
         console.log('results of promise dete return: ', results)
-        item = results[1]
         let textFields = []
         let numberFields = []
         let dateFields = []
-        item.fields.forEach(field => {
-          switch(field.fielddatatype) {
-            case 0:
-              console.log('Text field Name: ', field.fieldname, ' value: ', field.value) 
-              textField = {
-                textfield_id: field.id,
-                textfieldvalue: field.value,
-                textfielditem_id: id
-              }
-              textFields.push(textField)
-              console.log('text field example: ', item)
-              break;
-            case 1:
-              console.log('Number field Name: ', field.fieldname, ' value: ', field.value) 
-              numberField = {
-                numberfield_id: field.id,
-                numberfieldvalue: field.value,
-                numberfielditem_id: id
-              }
-              numberFields.push(numberField)
-              break;
-            case 2:
-              console.log('Date field Name: ', field.fieldname, ' value: ', field.value) 
-              dateField = {
-                datefield_id: field.id,
-                datefieldvalue: field.value,
-                datefielditem_id: id
-              }
-              dateFields.push(dateField)
-            default:
-              // code block
-          }
-        });
+        item_fields.forEach(item =>{
+          console.log('item from forEach: ',item)
+          const fields = JSON.parse(item.fields) 
+          fields.forEach(field => {
+            item_id = item.id
+            switch(field.fielddatatype) {
+              case 0:
+                console.log('Text field Name: ', field.fieldname, ' value: ', field.value) 
+                textField = {
+                  textfield_id: field.id,
+                  textfieldvalue: field.value,
+                  textfielditem_id: item_id
+                }
+                textFields.push(textField)
+                console.log('text field example: ', item)
+                break;
+              case 1:
+                console.log('Number field Name: ', field.fieldname, ' value: ', field.value) 
+                numberField = {
+                  numberfield_id: field.id,
+                  numberfieldvalue: field.value,
+                  numberfielditem_id: item_id
+                }
+                numberFields.push(numberField)
+                break;
+              case 2:
+                console.log('Date field Name: ', field.fieldname, ' value: ', field.value) 
+                dateField = {
+                  datefield_id: field.id,
+                  datefieldvalue: field.value,
+                  datefielditem_id: item_id
+                }
+                dateFields.push(dateField)
+              default:
+                // code block
+            }
+          });
+        })
+
         const addTextFields = CustomFields.addTextFieldInstance(textFields);
         const addNumberFields = CustomFields.addNumberFieldInstance(numberFields);
         const addDateFields = CustomFields.addDateFieldInstance(dateFields)

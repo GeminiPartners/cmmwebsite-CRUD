@@ -100,15 +100,16 @@ amqp.connect(connString, function(error0, connection) {
           console.log(" [x] Received %s", msgObj.action);
           switch(msgObj.action) {
             case "loadItemFields":
-              console.log('about to upd cust field ')
+              console.log('about to upd cust field ',msgObj.item_fields)
               Item
-                .updateCustomFields(msgObj.item_id)
-                .then(results => {
-                  return channel.ack(msg)
-                })
-                .catch(error =>{
-                  console.log(error)
-                })
+                .updateCustomFields(msgObj.item_fields)
+              //   .then(results => {
+              //     return channel.ack(msg)
+              //   })
+              //   .catch(error =>{
+              //     console.log(error)
+              //   })
+              channel.ack(msg)
               break;
             case y:
               // code block
