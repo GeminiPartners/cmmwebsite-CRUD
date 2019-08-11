@@ -33,21 +33,21 @@ exports.seed = (knex, Promise) => {
           fieldname: 'Focal length (mm)',
           fielddescription: 'Used along with the telescope focal length to determine magnification',
           fielditemtype_id: 2,
-          fielddatatype:2,
+          fielddatatype:1,
           fieldorder: 0,
           created_at: new Date()
         }, {
           fieldname: 'Size (inches)',
           fielddescription: 'Usually either 1.25 or 2; older ones have 0.965',
           fielditemtype_id: 2,
-          fielddatatype:2,
+          fielddatatype:1,
           fieldorder: 1,
           created_at: new Date()
         }, {
           fieldname: 'Apparent field of view (degrees)',
           fielddescription: 'The width of sky, in angular terms, that is presented to your eye ',
           fielditemtype_id: 2,
-          fielddatatype:2,
+          fielddatatype:1,
           fieldorder: 2,
           created_at: new Date()
         }];

@@ -3,6 +3,7 @@ const router = express.Router();
 
 const Item = require('../models/itemModel');
 const Item_category = require('../db/item_category')
+const Itemtypefield = require('../models/itemtypefieldModel')
 const Shared = require('../shared');
 
 function getItem(req, res) {
@@ -69,33 +70,45 @@ function createItem(req, res, next) {
   Shared.allowOrigin(res, req);
   const decoded = Shared.decode(req.headers['auth_token']);
   let items = req.body.items
+  let itemtype_ids = []
   items.forEach(item => {
     item.owner_id = decoded.user_id;
     item.fields = JSON.stringify(item.fields)
+    itemtype_ids.push(item.itemtype_id)
   })
-  // {
-    // itemname: req.body.itemname,
-    // itemdescription: req.body.itemdescription,
-    // itemtype_id: req.body.itemtype_id,
-    // price: req.body.price,
-    // fields: req.body.customfields
-  // };
-  
- 
-  // if (item_is_valid) {
-  //       return 
-  // } else throw new Error('Invalid item!')}
-  Item
-    .create(items, decoded.user_id)
-    .then(ids => {
-      console.log('controller ids: ',ids)
-      res.json({"message" : "Item created!", "ids": ids})
+  console.log('itemtype_id array: ', itemtype_ids)
+
+  Itemtypefield
+    .getByItemtype(uniq(itemtype_ids))
+    .then(itemtypefields => {
+      console.log('itemtypefields: ',itemtypefields)
+      return Item.validItem(items, itemtypefields)
     })
-    .catch(err => {
-      console.log(err, err.message)
-      resError(res, 404, err.message);
-    });
-  };
+    .then(results => {
+      validitems = []
+      errorMessages = []
+      results.forEach(result => {
+        if (result.valid) {
+          validitems.push(result.item)
+        } else {
+          errorMessages.push(result.message)
+        }
+        console.log('error messages: ', errorMessages)
+        console.log('valid items: ', validitems)
+      })
+      return Item
+      .create(validitems)
+      .then(result => {
+        res.json({"message" : "Item created!", "ids": result.ids, errorMessages: errorMessages})
+      })
+      .catch(err => {
+        console.log(err, err.message)
+        resError(res, 404, err.message);
+      });
+    })
+
+
+};
 
 function updateItem (req, res) {
   if (!isNaN(req.params.id)) {

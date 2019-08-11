@@ -35,18 +35,19 @@ describe('Unit: Item.getByUser', function() {
 });
 
 describe('Unit: Item.create', function() {
-    const newItem = {
+    const newItem = [{
         itemname: "She Hulk 127",
         itemdescription: "A She-hulk comic",
         itemtype_id: 1,
         price: 15.25,
-        fields: [
-          {id: 1, fieldname: 'Title', fielddatatype: 0, fieldorder: 1, value: 'The Sensational She-Hulk'},
-          {id: 2, fieldname:'Issue', fielddatatype: 1, fieldorder: 1, value: 20},
-          {id: 3, fieldname:'Volume', fielddatatype: 1, fieldorder: 2, value: 1},
-          {id: 4, fieldname:'Cover Date', fielddatatype: 2, fieldorder: 3, value: '1983-03-31'}
-        ]
-    }
+        fields: JSON.stringify([   
+          {id: 1, fieldname: 'Title', fielddatatype: 0, fieldorder: 1, value: 'The Sensational She-Hulk'}, 
+          {id: 2, fieldname:'Issue', fielddatatype: 1, fieldorder: 1, value: 20}, 
+          {id: 3, fieldname:'Volume', fielddatatype: 1, fieldorder: 2, value: 1}, 
+          {id: 4, fieldname:'Cover Date', fielddatatype: 2, fieldorder: 3, value: '1983-03-31'} 
+        ]),
+        owner_id: 1
+    }]
     context('With valid item info', function() {
       const owner_id = 1;
       after(function() {
@@ -78,12 +79,25 @@ describe('Unit: Item.update', function() {
         itemname: "She Hulk 127",
         itemdescription: "A She-hulk comic",
         itemtype_id: 1,
-        price: 15.25
+        price: 15.25,
+        fields: JSON.stringify([
+          {id: 1, fieldname: 'Title', fielddatatype: 0, fieldorder: 1, value: 'The Sensational She-Hulk'},
+          {id: 2, fieldname:'Issue', fielddatatype: 1, fieldorder: 1, value: 20},
+          {id: 3, fieldname:'Volume', fielddatatype: 1, fieldorder: 2, value: 1},
+          {id: 4, fieldname:'Cover Date', fielddatatype: 2, fieldorder: 3, value: '1983-03-31'}
+        ]),
+        owner_id: 1
     }
     const updateItem = {
         itemname: "NEW: She Hulk 127",
         itemdescription: "NEW: A She-hulk comic",
-        price: 25.25
+        price: 25.25,
+        fields: [
+          {id: 1, fieldname: 'Title', fielddatatype: 0, fieldorder: 1, value: 'New: Sensational She-Hulk'},
+          {id: 2, fieldname:'Issue', fielddatatype: 1, fieldorder: 1, value: 22},
+          {id: 3, fieldname:'Volume', fielddatatype: 1, fieldorder: 2, value: 1},
+          {id: 4, fieldname:'Cover Date', fielddatatype: 2, fieldorder: 3, value: '1985-05-31'}
+        ]
     }
     context('With valid item info', function() {
       const owner_id = 1;
@@ -110,13 +124,155 @@ describe('Unit: Item.update', function() {
     });     
 });
 
-describe('Unit: CustomField.deleteFieldInstances', function() {
+describe('Unit: Item.validItem', function() {
   const newItem = {
+    itemname: "She Hulk 127",
+    itemdescription: "A She-hulk comic",
+    itemtype_id: 1,
+    price: 15.25,
+    fields: JSON.stringify([
+      {id: 1, fieldname: 'Title', fielddatatype: 0, fieldorder: 1, value: 'The Sensational She-Hulk'},
+      {id: 2, fieldname:'Issue', fielddatatype: 1, fieldorder: 1, value: 20},
+      {id: 3, fieldname:'Volume', fielddatatype: 1, fieldorder: 2, value: 1},
+      {id: 4, fieldname:'Cover Date', fielddatatype: 2, fieldorder: 3, value: '1989-03-31'}
+    ]),
+    owner_id: 1
+  }
+
+  let badName = Object.assign({}, newItem);
+  badName.itemname = "";
+
+  let badDescription = Object.assign({}, newItem);
+  badDescription.itemdescription = "";
+
+  let badPrice = Object.assign({}, newItem);
+  badPrice.price = "Fred";
+
+  let badTextField = Object.assign({}, newItem);
+  badTextField.fields = JSON.stringify([
+    {id: 1, fieldname: 'Title', fielddatatype: 0, fieldorder: 1, value: 10},
+    {id: 2, fieldname:'Issue', fielddatatype: 1, fieldorder: 1, value: 20},
+    {id: 3, fieldname:'Volume', fielddatatype: 1, fieldorder: 2, value: 1},
+    {id: 4, fieldname:'Cover Date', fielddatatype: 2, fieldorder: 3, value: '1989-03-31'}
+  ]);  
+  
+  let badNumberField = Object.assign({}, newItem);
+  badNumberField.fields = JSON.stringify([
+    {id: 1, fieldname: 'Title', fielddatatype: 0, fieldorder: 1, value: 'The Sensational She-Hulk'},
+    {id: 2, fieldname:'Issue', fielddatatype: 1, fieldorder: 1, value: 20},
+    {id: 3, fieldname:'Volume', fielddatatype: 1, fieldorder: 2, value: "Fred"},
+    {id: 4, fieldname:'Cover Date', fielddatatype: 2, fieldorder: 3, value: '1989-03-31'}
+  ]);  
+  
+  let badDateField = Object.assign({}, newItem);
+  badDateField.fields = JSON.stringify([
+    {id: 1, fieldname: 'Title', fielddatatype: 0, fieldorder: 1, value: 'The Sensational She-Hulk'},
+    {id: 2, fieldname:'Issue', fielddatatype: 1, fieldorder: 1, value: 20},
+    {id: 3, fieldname:'Volume', fielddatatype: 1, fieldorder: 2, value: 1},
+    {id: 4, fieldname:'Cover Date', fielddatatype: 2, fieldorder: 3, value: 'Fred'}
+  ]);  
+  
+  let badFielddatatype = Object.assign({}, newItem);
+  badFielddatatype.fields = JSON.stringify([
+    {id: 1, fieldname: 'Title', fielddatatype: 0, fieldorder: 1, value: 'The Sensational She-Hulk'},
+    {id: 2, fieldname:'Issue', fielddatatype: 1, fieldorder: 1, value: 20},
+    {id: 3, fieldname:'Volume', fielddatatype: 2, fieldorder: 2, value: 1},
+    {id: 4, fieldname:'Cover Date', fielddatatype: 1, fieldorder: 3, value: '1989-03-31'}
+  ]);
+
+
+
+  context('With valid item info', function() {
+
+    it('returns true for valid info', function() {
+      return Item.validItem(newItem).should.eventually.eql({
+        valid: true,
+        message: ["Item is valid"]
+      })       
+    });    
+  });  
+
+  context('With invalid name', function() {
+
+    it('returns error message for bad name', function() {
+      return Item.validItem(badName).should.eventually.eql({
+        valid: false,
+        message: ["Enter a valid name."]
+      })       
+    });    
+  }); 
+
+  context('With invalid description', function() {
+
+    it('returns returns error message for bad description', function() {
+      return Item.validItem(badDescription).should.eventually.eql({
+        valid: false,
+        message: ["Enter a valid description."]
+      })       
+    });    
+  }); 
+
+  context('With invalid price', function() {
+
+    it('returns error message for bad price', function() {
+      return Item.validItem(badPrice).should.eventually.eql({
+        valid: false,
+        message: ["Enter a valid price."]
+      })       
+    });    
+  }); 
+
+  context('With invalid text field', function() {
+
+    it('returns error message for bad text field', function() {
+      return Item.validItem(badTextField).should.eventually.eql({
+        valid: false,
+        message: ["invalid fields: Title value is not a string"]
+      })       
+    });    
+  }); 
+
+  context('With invalid number field', function() {
+
+    it('returns error message for bad number field', function() {
+      return Item.validItem(badNumberField).should.eventually.eql({
+        valid: false,
+        message: ["invalid fields: Volume value is not a number"]
+      })       
+    });    
+  });  
+
+  context('With invalid date field', function() {
+
+    it('returns error message for bad number field', function() {
+      return Item.validItem(badDateField).should.eventually.eql({
+        valid: false,
+        message: ["invalid fields: Cover Date value is not a date (format 'YYYY-MM-DD')"]
+      })       
+    });    
+  });  
+
+  context('With invalid Fielddatatype', function() {
+
+    it('returns error message for bad fielddatatype', function() {
+      return Item.validItem(badFielddatatype).should.eventually.eql({
+        valid: false,
+        message: ["invalid fields: Volume datatype does not match the datatype 1: Cover Date datatype does not match the datatype 2"]
+      })       
+    });    
+  }); 
+
+     
+});
+
+describe('Unit: CustomField.deleteFieldInstances', function() {
+  const newItem = [{
       itemname: "Ghost Rider 44",
       itemdescription: "A Ghost Rider comic",
       itemtype_id: 1,
-      price: 15.22
-  };
+      price: 15.22,
+      owner_id: 1 
+  }];
   const newTextField = {
     textfield_id: 1,
     textfieldvalue: "My test2"
@@ -138,6 +294,7 @@ describe('Unit: CustomField.deleteFieldInstances', function() {
       .then(id => {
         console.log('the ID for the new item is:', id)
         newItemID = id[0];
+        newItemIDs = id
         newTextField.textfielditem_id = newItemID;
         newNumberField.numberfielditem_id = newItemID;
         newDateField.datefielditem_id = newItemID;
@@ -158,7 +315,7 @@ describe('Unit: CustomField.deleteFieldInstances', function() {
     })   
     it('should delete the fields for the specified item', function() {
       return CustomField
-      .deleteFieldInstances(newItemID)
+      .deleteFieldInstances(newItemIDs)
       .then(results => {
         console.log('test results of delete: ', results)
         results[0].should.equal(1);          
