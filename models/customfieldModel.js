@@ -1,7 +1,8 @@
 const knex = require('./connection');
 
 module.exports = {
-    deleteFieldInstances: function(ids) {    
+    deleteFieldInstances: function(ids) {  
+        console.log('ids for delete: ', ids)  
         const textResults = knex('textfieldinstance').whereIn('textfielditem_id', ids).del()
         const numberResults = knex('numberfieldinstance').whereIn('numberfielditem_id', ids).del()
         const dateResults = knex('datefieldinstance').whereIn('datefielditem_id', ids).del()

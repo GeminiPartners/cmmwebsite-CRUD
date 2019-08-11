@@ -20,7 +20,10 @@ describe('Unit: Item.getByUser', function() {
       return Item
       .getByUser(owner_id)
       .then(items => {
-        items[0].itemname.should.equal(expectedResult);
+        foundItem = items.find(element => {
+          return element.id = 1;
+        })          
+        foundItem.itemname.should.equal(expectedResult);
         });    
       });  
     });
@@ -68,13 +71,14 @@ describe('Unit: Item.create', function() {
         return Item
         .create(newItem, owner_id)
         .then(item => {
-          item.should.be.an.integer();          
+          item.ids[0].should.be.an.integer();          
           });    
         });  
     });     
 });
 
 describe('Unit: Item.update', function() {
+  //This is just creating an item???
     const newItem = {
         itemname: "She Hulk 127",
         itemdescription: "A She-hulk comic",
@@ -117,14 +121,56 @@ describe('Unit: Item.update', function() {
       it('should return item id for the created item', function() {
         return Item
         .create(newItem, owner_id)
-        .then(item => {
-          item.should.be.an.integer();          
+        .then(result => {
+          result.ids[0].should.be.an.integer();          
           });    
         });  
     });     
 });
 
 describe('Unit: Item.validItem', function() {
+  const itemtypeFields = [
+    {
+        id: 1,
+        fieldname: "Title",
+        fielddescription: "The title of the comic",
+        fielditemtype_id: 1,
+        fieldorder: 0,
+        fielddatatype: 0,
+        created_at: "2019-08-11T18:24:00.092Z",
+        updated_at: "2019-08-11T18:24:00.094Z"
+    },
+    {
+        id: 2,
+        fieldname: "Issue",
+        fielddescription: "Number of the comic",
+        fielditemtype_id: 1,
+        fieldorder: 1,
+        fielddatatype: 1,
+        created_at: "2019-08-11T18:24:00.092Z",
+        updated_at: "2019-08-11T18:24:00.094Z"
+    },
+    {
+        id: 3,
+        fieldname: "Volume",
+        fielddescription: "Number of the comic",
+        fielditemtype_id: 1,
+        fieldorder: 2,
+        fielddatatype: 1,
+        created_at: "2019-08-11T18:24:00.092Z",
+        updated_at: "2019-08-11T18:24:00.094Z"
+    },
+    {
+        id: 4,
+        fieldname: "Cover Date",
+        fielddescription: "Date put on the cover by the publisher for December 1990, use 12/1/1990",
+        fielditemtype_id: 1,
+        fieldorder: 3,
+        fielddatatype: 2,
+        created_at: "2019-08-11T18:24:00.092Z",
+        updated_at: "2019-08-11T18:24:00.094Z"
+    }
+]
   const newItem = {
     itemname: "She Hulk 127",
     itemdescription: "A She-hulk comic",
@@ -185,80 +231,121 @@ describe('Unit: Item.validItem', function() {
   context('With valid item info', function() {
 
     it('returns true for valid info', function() {
-      return Item.validItem(newItem).should.eventually.eql({
-        valid: true,
-        message: ["Item is valid"]
-      })       
-    });    
-  });  
+        Item.validItem([newItem], itemtypeFields).should.eql([ { item: 
+            { itemname: 'She Hulk 127',
+              itemdescription: 'A She-hulk comic',
+              itemtype_id: 1,
+              price: 15.25,
+              fields: '[{"id":1,"fieldname":"Title","fielddatatype":0,"fieldorder":0,"value":"The Sensational She-Hulk"},{"id":2,"fieldname":"Issue","fielddatatype":1,"fieldorder":1,"value":20},{"id":3,"fieldname":"Volume","fielddatatype":1,"fieldorder":2,"value":1},{"id":4,"fieldname":"Cover Date","fielddatatype":2,"fieldorder":3,"value":"1989-03-31"}]',
+              owner_id: 1 },
+            valid: true,
+            message: [ 'Item is valid' ] } ])  
+    })     
+  });    
+   
 
   context('With invalid name', function() {
 
     it('returns error message for bad name', function() {
-      return Item.validItem(badName).should.eventually.eql({
-        valid: false,
-        message: ["Enter a valid name."]
-      })       
+      return Item.validItem([badName], itemtypeFields).should.eql([ { item: 
+        { itemname: '',
+          itemdescription: 'A She-hulk comic',
+          itemtype_id: 1,
+          price: 15.25,
+          fields: '[{"id":1,"fieldname":"Title","fielddatatype":0,"fieldorder":0,"value":"The Sensational She-Hulk"},{"id":2,"fieldname":"Issue","fielddatatype":1,"fieldorder":1,"value":20},{"id":3,"fieldname":"Volume","fielddatatype":1,"fieldorder":2,"value":1},{"id":4,"fieldname":"Cover Date","fielddatatype":2,"fieldorder":3,"value":"1989-03-31"}]',
+          owner_id: 1 },
+       valid: false,
+       message: [ 'Enter a valid name.' ] } ])       
     });    
   }); 
 
   context('With invalid description', function() {
 
     it('returns returns error message for bad description', function() {
-      return Item.validItem(badDescription).should.eventually.eql({
-        valid: false,
-        message: ["Enter a valid description."]
-      })       
+      return Item.validItem([badDescription], itemtypeFields).should.eql([ { item: 
+        { itemname: 'She Hulk 127',
+          itemdescription: '',
+          itemtype_id: 1,
+          price: 15.25,
+          fields: '[{"id":1,"fieldname":"Title","fielddatatype":0,"fieldorder":0,"value":"The Sensational She-Hulk"},{"id":2,"fieldname":"Issue","fielddatatype":1,"fieldorder":1,"value":20},{"id":3,"fieldname":"Volume","fielddatatype":1,"fieldorder":2,"value":1},{"id":4,"fieldname":"Cover Date","fielddatatype":2,"fieldorder":3,"value":"1989-03-31"}]',
+          owner_id: 1 },
+       valid: false,
+       message: [ 'Enter a valid description.' ] } ])       
     });    
   }); 
 
   context('With invalid price', function() {
 
     it('returns error message for bad price', function() {
-      return Item.validItem(badPrice).should.eventually.eql({
-        valid: false,
-        message: ["Enter a valid price."]
-      })       
+      return Item.validItem([badPrice], itemtypeFields).should.eql([ { item: 
+        { itemname: 'She Hulk 127',
+          itemdescription: 'A She-hulk comic',
+          itemtype_id: 1,
+          price: 'Fred',
+          fields: '[{"id":1,"fieldname":"Title","fielddatatype":0,"fieldorder":0,"value":"The Sensational She-Hulk"},{"id":2,"fieldname":"Issue","fielddatatype":1,"fieldorder":1,"value":20},{"id":3,"fieldname":"Volume","fielddatatype":1,"fieldorder":2,"value":1},{"id":4,"fieldname":"Cover Date","fielddatatype":2,"fieldorder":3,"value":"1989-03-31"}]',
+          owner_id: 1 },
+       valid: false,
+       message: [ 'Enter a valid price.' ] } ])       
     });    
   }); 
 
   context('With invalid text field', function() {
 
     it('returns error message for bad text field', function() {
-      return Item.validItem(badTextField).should.eventually.eql({
-        valid: false,
-        message: ["invalid fields: Title value is not a string"]
-      })       
+      return Item.validItem([badTextField], itemtypeFields).should.eql([ { item: 
+        { itemname: 'She Hulk 127',
+          itemdescription: 'A She-hulk comic',
+          itemtype_id: 1,
+          price: 15.25,
+          fields: '[{"id":1,"fieldname":"Title","fielddatatype":0,"fieldorder":0,"value":10},{"id":2,"fieldname":"Issue","fielddatatype":1,"fieldorder":1,"value":20},{"id":3,"fieldname":"Volume","fielddatatype":1,"fieldorder":2,"value":1},{"id":4,"fieldname":"Cover Date","fielddatatype":2,"fieldorder":3,"value":"1989-03-31"}]',
+          owner_id: 1 },
+       valid: false,
+       message: [ 'invalid fields: Title value is not a string' ] } ])       
     });    
   }); 
 
   context('With invalid number field', function() {
 
     it('returns error message for bad number field', function() {
-      return Item.validItem(badNumberField).should.eventually.eql({
-        valid: false,
-        message: ["invalid fields: Volume value is not a number"]
-      })       
+      return Item.validItem([badNumberField], itemtypeFields).should.eql([ { item: 
+        { itemname: 'She Hulk 127',
+          itemdescription: 'A She-hulk comic',
+          itemtype_id: 1,
+          price: 15.25,
+          fields: '[{"id":1,"fieldname":"Title","fielddatatype":0,"fieldorder":0,"value":"The Sensational She-Hulk"},{"id":2,"fieldname":"Issue","fielddatatype":1,"fieldorder":1,"value":20},{"id":3,"fieldname":"Volume","fielddatatype":1,"fieldorder":2,"value":"Fred"},{"id":4,"fieldname":"Cover Date","fielddatatype":2,"fieldorder":3,"value":"1989-03-31"}]',
+          owner_id: 1 },
+       valid: false,
+       message: [ 'invalid fields: Volume value is not a number' ] } ])       
     });    
   });  
 
   context('With invalid date field', function() {
 
     it('returns error message for bad number field', function() {
-      return Item.validItem(badDateField).should.eventually.eql({
-        valid: false,
-        message: ["invalid fields: Cover Date value is not a date (format 'YYYY-MM-DD')"]
-      })       
+      return Item.validItem([badDateField], itemtypeFields).should.eql([ { item: 
+        { itemname: 'She Hulk 127',
+          itemdescription: 'A She-hulk comic',
+          itemtype_id: 1,
+          price: 15.25,
+          fields: '[{"id":1,"fieldname":"Title","fielddatatype":0,"fieldorder":0,"value":"The Sensational She-Hulk"},{"id":2,"fieldname":"Issue","fielddatatype":1,"fieldorder":1,"value":20},{"id":3,"fieldname":"Volume","fielddatatype":1,"fieldorder":2,"value":1},{"id":4,"fieldname":"Cover Date","fielddatatype":2,"fieldorder":3,"value":"Fred"}]',
+          owner_id: 1 },
+       valid: false,
+       message: [ 'invalid fields: Cover Date value is not a date (format \'YYYY-MM-DD\')' ] } ])       
     });    
   });  
 
   context('With invalid Fielddatatype', function() {
 
     it('returns error message for bad fielddatatype', function() {
-      return Item.validItem(badFielddatatype).should.eventually.eql({
-        valid: false,
-        message: ["invalid fields: Volume datatype does not match the datatype 1: Cover Date datatype does not match the datatype 2"]
-      })       
+      return Item.validItem([badFielddatatype], itemtypeFields).should.eql([ { item: 
+        { itemname: 'She Hulk 127',
+          itemdescription: 'A She-hulk comic',
+          itemtype_id: 1,
+          price: 15.25,
+          fields: '[{"id":1,"fieldname":"Title","fielddatatype":0,"fieldorder":0,"value":"The Sensational She-Hulk"},{"id":2,"fieldname":"Issue","fielddatatype":1,"fieldorder":1,"value":20},{"id":3,"fieldname":"Volume","fielddatatype":2,"fieldorder":2,"value":1},{"id":4,"fieldname":"Cover Date","fielddatatype":1,"fieldorder":3,"value":"1989-03-31"}]',
+          owner_id: 1 },
+       valid: false,
+       message: [ 'invalid fields: Volume datatype does not match the datatype 1: Cover Date datatype does not match the datatype 2' ] } ])       
     });    
   }); 
 
@@ -286,15 +373,16 @@ describe('Unit: CustomField.deleteFieldInstances', function() {
     datefieldvalue: "2018-02-01"
   };
   newItemID = 0;
+  newItemIDs = []
   context('Where fields exist', function() {
     
     before(function() {
       return Item
       .create(newItem, 1)
-      .then(id => {
-        console.log('the ID for the new item is:', id)
-        newItemID = id[0];
-        newItemIDs = id
+      .then(result => {
+        newItemIDs = result.ids
+        newItemID = newItemIDs[0];
+        console.log('newItemIDs: ', newItemIDs)
         newTextField.textfielditem_id = newItemID;
         newNumberField.numberfielditem_id = newItemID;
         newDateField.datefielditem_id = newItemID;
@@ -318,7 +406,7 @@ describe('Unit: CustomField.deleteFieldInstances', function() {
       .deleteFieldInstances(newItemIDs)
       .then(results => {
         console.log('test results of delete: ', results)
-        results[0].should.equal(1);          
+        results.should.eql([1, 1, 0]);          
         });    
       });  
   });     

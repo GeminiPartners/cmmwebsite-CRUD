@@ -27,7 +27,7 @@ function getItemtypefieldsByItemtype(req, res) {
     if (!isNaN(req.params.id)) {
       const decoded = Shared.decode(req.headers['auth_token']);
       Shared.allowOrigin(res, req);
-      Itemtypefield.getByItemtype(req.params.id)
+      Itemtypefield.getByItemtype([req.params.id])
       .then(itemtypefields => {
         console.log('here is our itemtypefield: ', itemtypefields)
         if (itemtypefields) {
