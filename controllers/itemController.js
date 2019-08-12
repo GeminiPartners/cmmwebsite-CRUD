@@ -119,17 +119,18 @@ function updateItem (req, res) {
         console.log('item to update: ', returned_item)
           const item_update = {
               id: req.params.id,
-              name: req.body.name,
-              description: req.body.description,
-              instructions: req.body.instructions,
-              default_instructions_suppress: req.body.default_instructions_suppress,
+              itemname: req.body.itemname,
+              itemdescription: req.body.itemdescription,
+              price: req.body.price,
+              fields: JSON.stringify(req.body.fields),
               user_id: decoded.user_id
           };
           Item
               .update(item_update, decoded.user_id)
               .then(id => {
                   res.json({
-                      message: 'item updated'
+                      message: 'item updated',
+                      id: id
                       });
           }); //can probably simplify this function; don't need the id
       } else {

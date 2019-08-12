@@ -62,12 +62,13 @@ module.exports = {
       }  
       })
   },
-  update: function(item) {
+  update: function(item, user_id) {
     console.log(item);
-    return knex('item').where({'id' : item.id}).update({
+    return knex('item').where({'id' : item.id, 'owner_id': user_id}).update({
         'itemname': item.itemname,
         'itemdescription': item.itemdescription,
         'price': item.price,
+        'fields': item.fields,
         'updated_at': new Date()
     })
   },
