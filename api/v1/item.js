@@ -9,6 +9,10 @@ router.get('/:id', (req, res) => {
   item_controller.getItem(req,res)
 });
 
+router.get('/user', (req, res) => {
+  item_controller.getItem(req,res)
+});
+
 router.post('/create', (req, res, next) => {
   item_controller.createItem(req, res, next)
 });
@@ -21,9 +25,6 @@ router.post('/delete/:id', (req, res) => {
   item_controller.deleteItem(req, res)
 });
 
-router.post('/addtocategories/:id', (req, res) => {
-  item_controller.addItemToCategories(req, res)
-});
 
 function resError(res, statusCode, message) {
   res.status(statusCode);

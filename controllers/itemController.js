@@ -114,29 +114,39 @@ function updateItem (req, res) {
   if (!isNaN(req.params.id)) {
       Shared.allowOrigin(res, req);
       const decoded = Shared.decode(req.headers['auth_token']);
-      Item.getOneToUpdate(req.params.id, decoded.user_id).then(returned_item => {
-      if (returned_item) {
-        console.log('item to update: ', returned_item)
-          const item_update = {
-              id: req.params.id,
-              itemname: req.body.itemname,
-              itemdescription: req.body.itemdescription,
-              price: req.body.price,
-              fields: JSON.stringify(req.body.fields),
-              user_id: decoded.user_id
-          };
-          Item
-              .update(item_update, decoded.user_id)
-              .then(id => {
-                  res.json({
-                      message: 'item updated',
-                      id: id
-                      });
-          }); //can probably simplify this function; don't need the id
-      } else {
-          resError(res, 404, "Item Not Found");
-      }
-      });
+      const itemRequest = Item.getOneToUpdate(req.params.id, decoded.user_id)
+      const itemtypefieldsRequest = Itemtypefield.getByItemtype(req.body.itemtype_id)
+
+      return Promise.all([itemRequest, itemtypefieldsRequest])
+      .then(values=> {
+        const returned_item = values[0]
+        const itemtypefields = values[1]
+        if (returned_item) {
+          console.log('item to update: ', returned_item)
+
+            const item_update = {
+                id: req.params.id,
+                itemname: req.body.itemname,
+                itemdescription: req.body.itemdescription,
+                price: req.body.price,
+                fields: JSON.stringify(req.body.fields),
+                user_id: decoded.user_id
+            };
+
+            validateItem = Item.validItem([item_update], itemtypefields)
+
+            Item
+                .update(validateItem[0].item, decoded.user_id)
+                .then(id => {
+                    res.json({
+                        message: 'item updated',
+                        id: id
+                        });
+            }); //can probably simplify this function; don't need the id
+        } else {
+            resError(res, 404, "Item Not Found");
+        }
+        });
   } else {
       resError(res, 500, "Invalid ID");
   }
@@ -162,45 +172,7 @@ function deleteItem (req, res) {
   }
 };
 
-function addItemToCategories (req, res) {
-  if (!isNaN(req.params.id)) {
-    Shared.allowOrigin(res, req);
-    const decoded = Shared.decode(req.headers['auth_token']);    
-    const add_item_categories = req.body.item_categories;
-    console.log('these are our ids: ', add_item_categories);
-  
-    Item_category.getByUser(decoded.user_id)
-    .then(item_categories => {
-      console.log('item_categories: ',item_categories, 'add_item_categories: ', add_item_categories);
-      return validCategories(item_categories, add_item_categories)
-    })
-    .then(categories_are_valid => {
-      if (categories_are_valid) {
-        return Item.getCategories(req.params.id);
-      } else throw new Error('Invalid category!');  
-    })
-    .then(existingCategories => {
-      console.log('our existing categories: ', existingCategories, 'add_item_categories: ', add_item_categories); 
-      var noDuplicateCategories = true;
-      for(i in existingCategories){
-        if (add_item_categories.includes(existingCategories[i].item_category_id)) {
-          noDuplicateCategories = false
-        };
-      };
-        if (noDuplicateCategories) {
-          return Item.addToItem_Categories(req.params.id, req.body.item_categories);
-          console.log('item in categories: ',item)
-        } else throw new Error('Item already added to category!');  })
-    .then(ids => {
-      res.json({ids, "message" : "Item added to categories!"})
-    })
-    .catch(err => {
-      console.log(err, err.message)
-      resError(res, 404, err.message);
-    });
-      
-  }
-};
+
 
 function resError(res, statusCode, message) {
   res.status(statusCode);
@@ -214,6 +186,5 @@ module.exports = {
     uniq,
     createItem,
     updateItem,
-    deleteItem,
-    addItemToCategories
+    deleteItem
 }

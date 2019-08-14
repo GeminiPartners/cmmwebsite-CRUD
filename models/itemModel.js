@@ -41,6 +41,7 @@ module.exports = {
               const queue = 'task_queue';
               const msgObj = {action: 'loadItemFields', item_fields: itemfields};
               const msg = JSON.stringify(msgObj)
+              console.log('create message', msg)
       
               channel.assertQueue(queue, {
                   durable: true
@@ -63,18 +64,56 @@ module.exports = {
       })
   },
   update: function(item, user_id) {
-    console.log(item);
-    return knex('item').where({'id' : item.id, 'owner_id': user_id}).update({
+    console.log('item: ',item);
+    return knex('item').where({'id': item.id, 'owner_id': user_id}).update({
         'itemname': item.itemname,
         'itemdescription': item.itemdescription,
         'price': item.price,
         'fields': item.fields,
         'updated_at': new Date()
     })
+    .then(id => {      
+      let myitemfields = []
+      myitemfields.push({id: id, fields: item.fields})
+      console.log('myitemfields: ', myitemfields)
+      
+      amqp.connect(connString, function(error0, connection) {
+        if (error0) {
+            throw error0;
+        }
+        connection.createChannel(function(error1, channel) {
+            if (error1) {
+                throw error1;
+            }
+    
+            const queue = 'task_queue';
+            const msgObj = {action: 'loadItemFields', item_fields: myitemfields};
+            const msg = JSON.stringify(msgObj)
+            console.log('update message: ', msg)
+    
+            channel.assertQueue(queue, {
+                durable: true
+            });
+            channel.sendToQueue(queue, Buffer.from(msg), {
+              persistent: true
+            });
+    
+            console.log(" [x] Sent %s", msg);
+        });
+        setTimeout(function() {
+            connection.close();
+            // process.exit(0);
+        }, 500);
+        console.log('IDs logged by Item Update: ', id)          
+    });
+    return {
+      id: id
+    }  
+    })
   },
   delete: function(id, user_id) {
     console.log('in the db function: ', id, ', ', user_id);
-    return knex('item').where({'id' : id}).del().then(function (result) {
+    return knex('item').whereIn('id', [13, 14]).del().then(function (result) {
       console.log('result: ',result);      
     });
   },
