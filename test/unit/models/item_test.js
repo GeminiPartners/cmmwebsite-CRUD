@@ -37,6 +37,23 @@ describe('Unit: Item.getByUser', function() {
   });
 });
 
+describe('Unit: Item.getMultipleToUpdate', function() {
+  context('With 2 valid ids and 1 id not allowed to edit', function() {
+    const owner_id = 1;
+    const item_ids =[1,2,3]
+    const expectedResult = 2;
+    it('should return 2 items', function() {
+      return Item
+      .getMultipleToUpdate(item_ids, owner_id)
+      .then(items => {    
+        items.length.should.equal(expectedResult);
+        });    
+      });  
+    });
+ 
+
+});
+
 describe('Unit: Item.create', function() {
     const newItem = [{
         itemname: "She Hulk 127",

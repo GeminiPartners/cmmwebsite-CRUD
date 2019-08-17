@@ -19,6 +19,14 @@ module.exports = {
   getOneToUpdate: function (id, user_id) {
     return knex('item').where({'id' : id, 'owner_id': user_id}).first();
   },
+  getMultipleToUpdate: function (ids, user_id) {
+    //Create a clause for the whereIn with the ownerId and item id of each
+    clause = []
+    ids.forEach(id => {
+      clause.push([user_id, id])
+    })
+    return knex('item').whereIn(['owner_id', 'id'], clause);
+  },
   create: function(items,  errorMessages) {
 
     return knex('item').insert(items, 'id')

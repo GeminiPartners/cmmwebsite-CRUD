@@ -21,6 +21,10 @@ router.patch('/:id', (req, res) => {
  item_controller.updateItem(req, res)
 });
 
+router.post('/delete/multiple', (req, res) => {
+  item_controller.deleteMultiple(req, res)
+});
+
 router.post('/delete/:id', (req, res) => {
   item_controller.deleteItem(req, res)
 });

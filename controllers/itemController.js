@@ -152,6 +152,49 @@ function updateItem (req, res) {
   }
 };
 
+function deleteMultiple (req, res) {
+  if (!isNaN(req.body.ids[0])) {
+    let item_ids = req.body.ids
+    const decoded = Shared.decode(req.headers['auth_token']);
+    Shared.allowOrigin(res, req);
+    Item
+    .getMultipleToUpdate(req.body.ids, decoded.user_id)
+    .then(items =>{
+      let deleteIDs = []
+      items.forEach(item => {
+        console.log('here are the items: ', item.id)
+        deleteIDs.push(parseInt(item.id))        
+      })
+      console.log('first id: ', deleteIDs[0])
+      return deleteIDs
+    })
+    .then(deleteIDs => {
+      console.log('returned delete ids: ', deleteIDs)
+      let diff = item_ids.filter(x => !deleteIDs.includes(x))
+      if (deleteIDs.length === 0) {
+        resError(res, 404, "Items Not Found");
+      } else if (deleteIDs.length === item_ids.length) {
+        console.log('about to attempt delete: ', deleteIDs)
+        Item.delete(deleteIDs, decoded.user_id).then(id => {
+          res.json({
+            message: 'items deleted'
+          });
+        });
+      } else {
+        Item.delete(deleteIDs, decoded.user_id).then(id => {
+          res.json({
+            message: 'Some items were not deleted due to permissions, or item did not exist',
+            deletedItems: deleteIDs,
+            notDeleted: diff
+          });
+        });
+      }
+      });
+  } else {
+    resError(res, 500, "Invalid ID");
+  }
+};
+
 function deleteItem (req, res) {
   if (!isNaN(req.params.id)) {
     const decoded = Shared.decode(req.headers['auth_token']);
@@ -174,6 +217,7 @@ function deleteItem (req, res) {
 
 
 
+
 function resError(res, statusCode, message) {
   res.status(statusCode);
   res.json({message});
@@ -186,5 +230,6 @@ module.exports = {
     uniq,
     createItem,
     updateItem,
-    deleteItem
+    deleteItem,
+    deleteMultiple
 }
