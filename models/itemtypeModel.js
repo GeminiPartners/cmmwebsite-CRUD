@@ -4,6 +4,10 @@ module.exports = {
   getOne: function (id) {
     console.log('about to return itemtype ', id)
     return knex('itemtype').where({'id' : id}).first();
+  },    
+  getOneByName: function (name) {
+    console.log('about to return itemtype ', name)
+    return knex('itemtype').where({'itemtypename' : name}).first();
   },
   create: function (itemtype, add_user_id) {
     const add_itemtype= {
@@ -17,8 +21,6 @@ module.exports = {
   },  
   delete: function(id, user_id) {
     console.log('in the db function: ', id, ', ', user_id);
-    return knex('item').whereIn('id', [13, 14]).del().then(function (result) {
-      console.log('result: ',result);      
-    });
+    return knex('itemtype').whereIn('id', id).del()    
   }
 }

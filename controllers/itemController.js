@@ -10,7 +10,8 @@ function getItem(req, res) {
   if (!isNaN(req.params.id)) {
     const decoded = Shared.decode(req.headers['auth_token']);
     Shared.allowOrigin(res, req);
-    Item.getOne(req.params.id, decoded.user_id)
+    Item
+    .getOne(req.params.id, decoded.user_id)
     .then(item => {
       console.log('here is our item: ', item)
       if (item) {
@@ -19,6 +20,10 @@ function getItem(req, res) {
       } else {
         resError(res, 404, "Item Not Found");
       }
+    })
+    .catch(err => {
+      console.log(err, err.message)
+      resError(res, 404, err.message);
     });
   }else {
     resError(res, 500, "Invalid ID");
@@ -106,6 +111,10 @@ function createItem(req, res, next) {
         resError(res, 404, err.message);
       });
     })
+    .catch(err => {
+      console.log(err, err.message)
+      resError(res, 404, err.message);
+    });
 
 
 };
@@ -142,11 +151,19 @@ function updateItem (req, res) {
                         message: 'item updated',
                         id: id
                         });
-            }); //can probably simplify this function; don't need the id
+            })
+            .catch(err => {
+              console.log(err, err.message)
+              resError(res, 404, err.message);
+            }); 
         } else {
             resError(res, 404, "Item Not Found");
         }
-        });
+        })
+        .catch(err => {
+          console.log(err, err.message)
+          resError(res, 404, err.message);
+        });;
   } else {
       resError(res, 500, "Invalid ID");
   }
@@ -189,6 +206,10 @@ function deleteMultiple (req, res) {
           });
         });
       }
+      })
+      .catch(err => {
+        console.log(err, err.message)
+        resError(res, 404, err.message);
       });
   } else {
     resError(res, 500, "Invalid ID");
@@ -199,16 +220,28 @@ function deleteItem (req, res) {
   if (!isNaN(req.params.id)) {
     const decoded = Shared.decode(req.headers['auth_token']);
     Shared.allowOrigin(res, req);
-    Item.getOneToUpdate(req.params.id, decoded.user_id).then(item => {
+    Item
+    .getOneToUpdate(req.params.id, decoded.user_id)
+    .then(item => {
     if (item) {
-        Item.delete([req.params.id], decoded.user_id).then(id => {
+        Item
+        .delete([req.params.id], decoded.user_id)
+        .then(id => {
           res.json({
               message: 'item deleted'
               });
+            })
+            .catch(err => {
+              console.log(err, err.message)
+              resError(res, 404, err.message);
             });
     } else {
         resError(res, 404, "Item Not Found");
     }
+    })
+    .catch(err => {
+      console.log(err, err.message)
+      resError(res, 404, err.message);
     });
   } else {
     resError(res, 500, "Invalid ID");

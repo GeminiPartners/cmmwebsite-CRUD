@@ -25,23 +25,33 @@ describe('Unit: Itemtype.getOne', function() {
 });
 
 describe('Unit: Itemtype.create', function() {
-  // after(function() {
-  //   return Item
-  // });
+  const itemtype = {
+    itemtypename: "New Type",
+    itemtypedescription: "A new item type",
+    itemtypeorder: 5,
+    itemtypemarket: 1
+  }
+  after(function() {
+    return Itemtype
+      .getOneByName(itemtype.itemtypename)
+      .then(result => {
+        console.log('result of getonebyname: ', result)
+        return Itemtype.delete([result.id], 1)
+      })
+      .then(result => {
+        console.log('result of delete: ', result)
+      })
+  });
   context('With valid info', function() {
     const expectedResult = "Comics";
-    const itemtype = {
-      itemtypename: "New Type",
-      itemtypedescription: "A new item type",
-      itemtypeorder: 5,
-      itemtypemarket: 1
-    }
+
     it('should return an integer', function() {
       return Itemtype
         .create(itemtype)
         .then(result => {
           console.log(result)
           result.should.be.an.integer;
+          ItemtypeCreateID = result
         });    
     });  
   });
