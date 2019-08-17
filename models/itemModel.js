@@ -14,7 +14,6 @@ module.exports = {
     return knex('item').where({'itemname' : name}).first();
   },
   getOne: function (id) {
-    console.log('about to return item ', id)
     return knex('item').where({'id' : id}).first();
   },
   getOneToUpdate: function (id, user_id) {
@@ -111,19 +110,10 @@ module.exports = {
     }  
     })
   },
-  delete: function(id, user_id) {
-    console.log('in the db function: ', id, ', ', user_id);
-    return knex('item').whereIn('id', [13, 14]).del().then(function (result) {
+  delete: function(ids, user_id) {
+    console.log('in the db function: ', ids, ', ', user_id);
+    return knex('item').whereIn('id', ids).del().then(function (result) {
       console.log('result: ',result);      
-    });
-  },
-  addToItem_Categories: function(id, item_categories){
-    var item_category_items = [];
-    for (i in item_categories) {
-      item_category_items.push({item_id : id, item_category_id : item_categories[i], created_at: new Date()})
-    };
-    return knex('item_category_item').insert(item_category_items, 'id').then (ids => {
-      return ids;
     });
   },
   updateCustomFields: function(item_fields){    

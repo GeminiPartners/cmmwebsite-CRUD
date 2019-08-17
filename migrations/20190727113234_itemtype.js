@@ -8,6 +8,7 @@ exports.up = function(knex) {
         table.integer('itemtypemarket').notNullable().references('market.id').unsigned().onDelete('cascade');
         table.datetime('created_at').notNullable().defaultTo(knex.fn.now(6));
         table.datetime('updated_at').notNullable().defaultTo(knex.fn.now(6));
+        table.unique(['itemtypename', 'itemtypemarket'])
     });
 };
 

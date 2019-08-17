@@ -158,7 +158,7 @@ function deleteItem (req, res) {
     Shared.allowOrigin(res, req);
     Item.getOneToUpdate(req.params.id, decoded.user_id).then(item => {
     if (item) {
-        Item.delete(req.params.id, decoded.user_id).then(id => {
+        Item.delete([req.params.id], decoded.user_id).then(id => {
           res.json({
               message: 'item deleted'
               });
