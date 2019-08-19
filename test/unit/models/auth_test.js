@@ -16,7 +16,7 @@ describe('Unit: auth.MarketItemTypeAuth', function() {
     const user_id = 2
     it('should return an itemtype', function() {
       return Auth
-        .MarketItemTypeAuth(user_id)
+        .marketItemtypeAuth(user_id)
         .then(results => {
           console.log('market auth results: ', results)
           results[0].itemtypename.should.equal(expectedResult);

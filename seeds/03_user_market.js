@@ -4,10 +4,12 @@ exports.seed = (knex, Promise) => {
         const user_markets = [{
           user_id: 1,
           market_id: 1,
+          role: 2,
           created_at: new Date()
         }, {
           user_id: 2,
           market_id: 2,
+          role: 2,
           created_at: new Date()
         }];
 

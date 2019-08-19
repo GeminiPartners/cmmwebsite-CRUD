@@ -11,6 +11,7 @@ module.exports = {
     return knex('item').where('owner_id', id);
   },
   getOneByName: function (name) {
+    console.log('about to return item by name: ', name)
     return knex('item').where({'itemname' : name}).first();
   },
   getOne: function (id) {
@@ -119,10 +120,10 @@ module.exports = {
     })
   },
   delete: function(ids, user_id) {
-    console.log('in the db function: ', ids, ', ', user_id);
-    return knex('item').whereIn('id', ids).del().then(function (result) {
-      console.log('result: ',result);      
-    });
+    return knex('item')
+    .where('owner_id', user_id)
+    .whereIn('id', ids)
+    .del() 
   },
   updateCustomFields: function(item_fields){    
     // Take all of the custom fields from an item's custom fields column and update the custom fields tables

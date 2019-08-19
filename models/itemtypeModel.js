@@ -1,4 +1,5 @@
 const knex = require('./connection');
+const Auth = require('./authModel')
 
 module.exports = {    
   getOne: function (id) {
@@ -19,8 +20,22 @@ module.exports = {
     }
     return knex('itemtype').insert(add_itemtype, 'id')
   },  
-  delete: function(id, user_id) {
-    console.log('in the db function: ', id, ', ', user_id);
-    return knex('itemtype').whereIn('id', id).del()    
+  delete: function(ids, user_id) {
+    // const authIds = knex.select(itemtype)
+    // clause = []
+    // ids.forEach(id => {
+    //   clause.push([user_id, id, 2])
+    // })
+    return knex('itemtype')        
+    .whereIn('id', function() {
+      this.select('itemtype_id')
+          .from('marketItemtypeAuth')
+          .where('role', '>', '0')
+          .where({'user_id': user_id})
+          .whereIn('itemtype_id', ids)
+    })
+    .del()
+   
+    
   }
 }

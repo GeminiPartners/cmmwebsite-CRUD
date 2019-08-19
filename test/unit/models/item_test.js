@@ -37,6 +37,42 @@ describe('Unit: Item.getByUser', function() {
   });
 });
 
+describe('Unit: Item.delete', function() {
+  const newItem = [{
+    itemname: "She Hulk 127 Delete",
+    itemdescription: "A She-hulk comic",
+    itemtype_id: 1,
+    price: 15.25,
+    fields: JSON.stringify([   
+      {id: 1, fieldname: 'Title', fielddatatype: 0, fieldorder: 1, value: 'The Sensational She-Hulk'}, 
+      {id: 2, fieldname:'Issue', fielddatatype: 1, fieldorder: 1, value: 20}, 
+      {id: 3, fieldname:'Volume', fielddatatype: 1, fieldorder: 2, value: 1}, 
+      {id: 4, fieldname:'Cover Date', fielddatatype: 2, fieldorder: 3, value: '1983-03-31'} 
+    ]),
+    owner_id: 1
+}]
+  before(function() {
+    return Item
+    .create(newItem, 1)
+    .then(result => {
+      console.log('create item result: ', result)
+    })
+  })
+  context('With valid id', function() {
+    const owner_id = 1;
+    const expectedResult = 1;
+    console.log('item name to be deleted: ', newItem[0].itemname)
+    it('should return items', function() {
+      return Item
+      .getOneByName(newItem[0].itemname)
+      .then(result => {
+        console.log('Getonebyname result: ', result)
+        return Item.delete([result.id], owner_id).should.eventually.equal(expectedResult);
+        });    
+      });  
+    });
+});
+
 describe('Unit: Item.getMultipleToUpdate', function() {
   context('With 2 valid ids and 1 id not allowed to edit', function() {
     const owner_id = 1;

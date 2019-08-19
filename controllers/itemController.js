@@ -120,19 +120,21 @@ function createItem(req, res, next) {
 };
 
 function updateItem (req, res) {
+  console.log('update item controller start')
   if (!isNaN(req.params.id)) {
+    console.log('parm is a number')
       Shared.allowOrigin(res, req);
       const decoded = Shared.decode(req.headers['auth_token']);
       const itemRequest = Item.getOneToUpdate(req.params.id, decoded.user_id)
       const itemtypefieldsRequest = Itemtypefield.getByItemtype(req.body.itemtype_id)
-
+      console.log('params for itemRequest: ',req.params.id, ', ', decoded.user_id)
+      //Retrieve the item and fields in order to validate
       return Promise.all([itemRequest, itemtypefieldsRequest])
       .then(values=> {
+        console.log('got through the promis all', values)
         const returned_item = values[0]
         const itemtypefields = values[1]
         if (returned_item) {
-          console.log('item to update: ', returned_item)
-
             const item_update = {
                 id: req.params.id,
                 itemname: req.body.itemname,
@@ -141,15 +143,14 @@ function updateItem (req, res) {
                 fields: JSON.stringify(req.body.fields),
                 user_id: decoded.user_id
             };
-
+            //If the item exists and the user can edit it, verify that it and all its fields are valid
             validateItem = Item.validItem([item_update], itemtypefields)
-
+            //The validateItem function ensures that the item's field properties are set to the itemtype definition
             Item
                 .update(validateItem[0].item, decoded.user_id)
                 .then(id => {
                     res.json({
-                        message: 'item updated',
-                        id: id
+                        message: 'item updated'
                         });
             })
             .catch(err => {
