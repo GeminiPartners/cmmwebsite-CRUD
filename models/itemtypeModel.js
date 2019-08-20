@@ -18,7 +18,9 @@ module.exports = {
       itemtypemarket: itemtype.itemtypemarket,
       created_at: new Date()
     }
-    return knex('itemtype').insert(add_itemtype, 'id')
+    return knex('itemtype')
+      .insert(add_itemtype, 'id')
+      // .then(result => {return result})
   },  
   delete: function(ids, user_id) {
     return knex('itemtype')        
@@ -55,9 +57,26 @@ module.exports = {
       })
     return Promise
       .all([itemtypenameNotEmtpy, itemtypenameUnique, itemtypeorderIsNumber, itemtypeMarketIsValid])
-      .then(values => {
-        console.log('promise values: ', values)
-        return values
+      .then(values => {  
+        const isValidItemtype = values[0] && values[1] && values[2] && values[3] 
+        let msg = []
+        if (!values[0]) {
+          msg.push('Itemtype Name is empty')
+        }
+        if (!values[1]) {
+          msg.push('Itemtype Name is already in use for this Market')
+        }
+        if (!values[2]) {
+          msg.push('Itemtype Order must be a valid number')
+        }
+        if (!values[3]) {
+          msg.push('Itemtype Market is not vallid or user does not have permissions')
+        }
+        return {
+          itemtype: itemtype,
+          valid: isValidItemtype,
+          message: msg
+        }
       })
   }
 }

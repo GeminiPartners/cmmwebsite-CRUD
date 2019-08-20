@@ -43,7 +43,15 @@ function createItemtype(req, res, next) {
   };  
  
   Itemtype
-    .create(itemtype, decoded.user_id)
+    .validItemtype(itemtype, decoded.user_id)
+    .then(result => {
+      if (result.valid){
+        console.log('Itemtype create')
+        return Itemtype.create(result.itemtype, decoded.user_id)
+      } else {
+        throw new Error(result.message)
+      }      
+    })
     .then(ids => {
       console.log('controller ids: ',ids)
       res.json({"message" : "Itemtype created!", "id": ids})

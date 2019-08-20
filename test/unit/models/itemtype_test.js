@@ -61,14 +61,14 @@ describe('Unit: Itemtype.validItemtype', function() {
   }
 
   context('With valid id', function() {
-    const expectedResult = 1;
+    const expectedResult = true;
     it('should return valid', function() {
       console.log('itemtype const: ', itemtype)
       return Itemtype
         .validItemtype(itemtype, 1)
         .then(result => {
           console.log('itemtype valid result: ', result)
-          result.should.equal(expectedResult);
+          result.valid.should.equal(expectedResult);
         })       
    
     });  
