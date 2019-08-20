@@ -52,6 +52,29 @@ describe('Unit: Itemtype.delete', function() {
   });
 });
 
+describe('Unit: Itemtype.validItemtype', function() {
+  const itemtype = {
+    itemtypename: "New Type Delete",
+    itemtypedescription: "A new item type",
+    itemtypeorder: 5,
+    itemtypemarket: 1
+  }
+
+  context('With valid id', function() {
+    const expectedResult = 1;
+    it('should return valid', function() {
+      console.log('itemtype const: ', itemtype)
+      return Itemtype
+        .validItemtype(itemtype, 1)
+        .then(result => {
+          console.log('itemtype valid result: ', result)
+          result.should.equal(expectedResult);
+        })       
+   
+    });  
+  });
+});
+
 describe('Unit: Itemtype.create', function() {
   const itemtype = {
     itemtypename: "New Type",

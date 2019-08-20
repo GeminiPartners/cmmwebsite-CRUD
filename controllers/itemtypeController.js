@@ -24,21 +24,12 @@ function getItemtype(req, res) {
 }; 
   
 
-
-
-function validItemType(itemtype) {
-  console.log('here is the item: ',item);
-    const validName = itemtype.itemtypename.trim() != '';
-    const validDescription = itemtype.itemtypedescription.trim() != '';     
-    console.log('validItem func: ', validName, validDescription)
-    return validName && validDescription 
-};
-
 function uniq(a) {
   return a.sort().filter(function(item, pos, ary) {
       return !pos || item != ary[pos - 1];
   })
 };
+
 
 function createItemtype(req, res, next) {
   Shared.allowOrigin(res, req);
@@ -49,12 +40,8 @@ function createItemtype(req, res, next) {
     itemtypedescription: req.body.itemtypedescription,
     itemtypeorder: req.body.itemtypeorder,
     itemtypemarket: req.body.itemtypemarket
-  };
-  
+  };  
  
-  // if (item_is_valid) {
-  //       return 
-  // } else throw new Error('Invalid item!')}
   Itemtype
     .create(itemtype, decoded.user_id)
     .then(ids => {
@@ -118,45 +105,6 @@ function deleteItem (req, res) {
   }
 };
 
-function addItemToCategories (req, res) {
-  if (!isNaN(req.params.id)) {
-    Shared.allowOrigin(res, req);
-    const decoded = Shared.decode(req.headers['auth_token']);    
-    const add_item_categories = req.body.item_categories;
-    console.log('these are our ids: ', add_item_categories);
-  
-    Item_category.getByUser(decoded.user_id)
-    .then(item_categories => {
-      console.log('item_categories: ',item_categories, 'add_item_categories: ', add_item_categories);
-      return validCategories(item_categories, add_item_categories)
-    })
-    .then(categories_are_valid => {
-      if (categories_are_valid) {
-        return Item.getCategories(req.params.id);
-      } else throw new Error('Invalid category!');  
-    })
-    .then(existingCategories => {
-      console.log('our existing categories: ', existingCategories, 'add_item_categories: ', add_item_categories); 
-      var noDuplicateCategories = true;
-      for(i in existingCategories){
-        if (add_item_categories.includes(existingCategories[i].item_category_id)) {
-          noDuplicateCategories = false
-        };
-      };
-        if (noDuplicateCategories) {
-          return Item.addToItem_Categories(req.params.id, req.body.item_categories);
-          console.log('item in categories: ',item)
-        } else throw new Error('Item already added to category!');  })
-    .then(ids => {
-      res.json({ids, "message" : "Item added to categories!"})
-    })
-    .catch(err => {
-      console.log(err, err.message)
-      resError(res, 404, err.message);
-    });
-      
-  }
-};
 
 function resError(res, statusCode, message) {
   res.status(statusCode);
