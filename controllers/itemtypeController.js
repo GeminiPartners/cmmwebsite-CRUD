@@ -62,32 +62,25 @@ function createItemtype(req, res, next) {
     });
   };
 
-function updateItem (req, res) {
+function updateItemtype (req, res) {
   if (!isNaN(req.params.id)) {
-      Shared.allowOrigin(res, req);
-      const decoded = Shared.decode(req.headers['auth_token']);
-      Item.getOneToUpdate(req.params.id, decoded.user_id).then(returned_item => {
-      if (returned_item) {
-        console.log('item to update: ', returned_item)
-          const item_update = {
-              id: req.params.id,
-              name: req.body.name,
-              description: req.body.description,
-              instructions: req.body.instructions,
-              default_instructions_suppress: req.body.default_instructions_suppress,
-              user_id: decoded.user_id
-          };
-          Item
-              .update(item_update, decoded.user_id)
-              .then(id => {
-                  res.json({
-                      message: 'item updated'
-                      });
-          }); //can probably simplify this function; don't need the id
-      } else {
-          resError(res, 404, "Item Not Found");
-      }
-      });
+    Shared.allowOrigin(res, req);
+    const decoded = Shared.decode(req.headers['auth_token']);  
+    const itemtype_update = {
+        id: req.params.id,
+        itemtypename: req.body.itemtypename,
+        itemtypedescription: req.body.itemtypedescription,
+        itemtypeorder: req.body.itemtypeorder,
+        itemtypemarket: req.body.itemtypemarket
+    };
+    Itemtype
+        .update(itemtype_update, decoded.user_id)
+        .then(result => {
+            res.json({
+                message: 'item updated'
+                });
+    });      
+    
   } else {
       resError(res, 500, "Invalid ID");
   }
@@ -121,5 +114,6 @@ function resError(res, statusCode, message) {
 
 module.exports = {
     getItemtype,
-    createItemtype
+    createItemtype,
+    updateItemtype
 }

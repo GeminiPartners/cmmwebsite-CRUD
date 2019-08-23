@@ -5,7 +5,7 @@ module.exports = {
   getOne: function (id) {
     console.log('about to return itemtype ', id)
     return knex('itemtype').where({'id' : id}).first();
-  },    
+  }, 
   getOneByName: function (name) {
     console.log('about to return itemtype ', name)
     return knex('itemtype').where({'itemtypename' : name}).first();
@@ -18,10 +18,35 @@ module.exports = {
       itemtypemarket: itemtype.itemtypemarket,
       created_at: new Date()
     }
-    return knex('itemtype')
-      .insert(add_itemtype, 'id')
-      // .then(result => {return result})
+    return knex('marketItemtypeAuth')
+      .where('user_id', add_user_id)
+      .where('market_id', itemtype.itemtypemarket)
+      .where('role', '>', 0)
+      .first()
+      .then(result => {
+        if (result.role > 0) {
+          return knex('itemtype').insert(add_itemtype, 'id')
+        } else {
+          throw new Error('Invalid market ID or user does not have permissions')
+        }
+        
+      })
   },  
+  update: function(itemtype, user_id) {
+    console.log('itemtype to be updated: ',itemtype);
+    return knex('itemtype').where({'id': itemtype.id}).update({
+        'itemtypename': itemtype.itemtypename,
+        'itemtypedescription': itemtype.itemtypedescription,
+        'itemtypeorder': itemtype.itemtypeorder,
+        'itemtypemarket': itemtype.itemtypemarket,
+        'updated_at': new Date()
+    })
+    .then(result =>{
+      return result
+    })
+  },
+
+
   delete: function(ids, user_id) {
     return knex('itemtype')        
     .whereIn('id', function() {

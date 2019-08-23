@@ -13,9 +13,9 @@ router.post('/create', (req, res, next) => {
   itemtype_controller.createItemtype(req, res, next)
 });
 
-// router.patch('/:id', (req, res) => {
-//  item_controller.updateItem(req, res)
-// });
+router.patch('/:id', (req, res) => {
+ itemtype_controller.updateItemtype(req, res)
+});
 
 // router.post('/delete/:id', (req, res) => {
 //   item_controller.deleteItem(req, res)
