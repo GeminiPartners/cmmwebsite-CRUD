@@ -74,37 +74,73 @@ function updateItemtype (req, res) {
         itemtypemarket: req.body.itemtypemarket
     };
     Itemtype
-        .update(itemtype_update, decoded.user_id)
-        .then(result => {
-            res.json({
-                message: 'item updated'
-                });
-    });      
+      .validItemtype(itemtype_update,decoded.user_id)
+      .then(result => {
+        console.log('valid item type result: ', result)
+        console.log('is result valid: ', result.valid)
+        if (result.valid === true){
+          console.log('item update is run')
+          return Itemtype.update(result.itemtype, decoded.user_id)
+        } else {
+          console.log('res error is run')
+          throw new Error(result.message)
+        }
+      })        
+      .then(result => {
+        if (result > 0) {
+          res.json({
+            message: 'item updated'
+          });
+        } else {
+          resError(res, 404, "Item not found, or no permission to update")
+        }
+      })
+      .catch(err => {
+        console.log(err, err.message)
+        resError(res, 404, err.message);
+      });;      
     
   } else {
       resError(res, 500, "Invalid ID");
   }
 };
 
-function deleteItem (req, res) {
-  if (!isNaN(req.params.id)) {
+function deleteItemtype (req, res) {
+  if (validIDs(req.body.ids)) {
     const decoded = Shared.decode(req.headers['auth_token']);
     Shared.allowOrigin(res, req);
-    Item.getOneToUpdate(req.params.id, decoded.user_id).then(item => {
-    if (item) {
-        Item.delete(req.params.id, decoded.user_id).then(id => {
-          res.json({
-              message: 'item deleted'
-              });
-            });
-    } else {
-        resError(res, 404, "Item Not Found");
-    }
-    });
+    Itemtype
+    .delete(req.body.ids, decoded.user_id)
+    .then(results => {    
+      console.log('delete results: ', results)
+      if (results === req.body.ids.length) {
+        res.json({
+          message: 'item deleted'
+        });
+      } else if (results > 0) {
+        res.json({
+          message: 'some itemtypes were not deleted; itemtype not found or user did not have permissions'
+        })
+      } else {
+        resError(res, 404, "Itemtype Not Found");
+      }
+
+    })
+    .catch(err => {
+      resError(res, 404, err.message);
+    });;
   } else {
     resError(res, 500, "Invalid ID");
   }
 };
+
+function validIDs (ids) {
+  if (Array.isArray(ids)) {
+    return ids.every(element => {return !isNaN(element)}) 
+  } else {
+    return false
+  }
+}
 
 
 function resError(res, statusCode, message) {
@@ -115,5 +151,6 @@ function resError(res, statusCode, message) {
 module.exports = {
     getItemtype,
     createItemtype,
-    updateItemtype
+    updateItemtype,
+    deleteItemtype
 }

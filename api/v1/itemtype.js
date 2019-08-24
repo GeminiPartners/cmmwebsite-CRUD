@@ -17,9 +17,9 @@ router.patch('/:id', (req, res) => {
  itemtype_controller.updateItemtype(req, res)
 });
 
-// router.post('/delete/:id', (req, res) => {
-//   item_controller.deleteItem(req, res)
-// });
+router.post('/delete/', (req, res) => {
+  itemtype_controller.deleteItemtype(req, res)
+});
 
 // router.post('/addtocategories/:id', (req, res) => {
 //   item_controller.addItemToCategories(req, res)

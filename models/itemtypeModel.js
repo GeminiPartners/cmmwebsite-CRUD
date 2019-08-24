@@ -34,7 +34,15 @@ module.exports = {
   },  
   update: function(itemtype, user_id) {
     console.log('itemtype to be updated: ',itemtype);
-    return knex('itemtype').where({'id': itemtype.id}).update({
+    return knex('itemtype')        
+    .whereIn('id', function() {
+      this.select('itemtype_id')
+          .from('marketItemtypeAuth')
+          .where('role', '>', '0')
+          .where({'user_id': user_id})
+          .where('itemtype_id', itemtype.id)
+    })
+    .update({
         'itemtypename': itemtype.itemtypename,
         'itemtypedescription': itemtype.itemtypedescription,
         'itemtypeorder': itemtype.itemtypeorder,
@@ -59,11 +67,14 @@ module.exports = {
     .del()    
   },
   validItemtype: function(itemtype, user_id) {
+    const itemtype_id = itemtype.id || 0
+    console.log('itemtype id: ', itemtype_id)
     const itemtypenameNotEmtpy = itemtype.itemtypename.trim() != "";
     const itemtypeorderIsNumber = !isNaN(itemtype.itemtypeorder)
     const itemtypenameUnique = knex('itemtype')
       .where('itemtypemarket', itemtype.itemtypemarket)
       .where('itemtypename', itemtype.itemtypename)
+      .where('id', '!=', itemtype_id)
       .then(result => {
         console.log('result of itemtypename check', result)
         return result.length === 0
@@ -83,6 +94,7 @@ module.exports = {
     return Promise
       .all([itemtypenameNotEmtpy, itemtypenameUnique, itemtypeorderIsNumber, itemtypeMarketIsValid])
       .then(values => {  
+        console.log('validate values: ', values)
         const isValidItemtype = values[0] && values[1] && values[2] && values[3] 
         let msg = []
         if (!values[0]) {
