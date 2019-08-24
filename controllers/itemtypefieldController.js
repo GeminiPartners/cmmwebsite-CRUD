@@ -45,13 +45,7 @@ function getItemtypefieldsByItemtype(req, res) {
 
 
 
-function validItemtypeField(itemtypeField) {
-  console.log('here is the item: ',item);
-    const validName = itemtypefield.itemtypefieldname.trim() != '';
-    const validDescription = itemtypefield.itemtypefielddescription.trim() != '';     
-    console.log('validItem func: ', validName, validDescription)
-    return validName && validDescription 
-};
+
 
 function uniq(a) {
   return a.sort().filter(function(item, pos, ary) {
@@ -71,10 +65,14 @@ function createItemtypeFields(req, res, next) {
   //       return 
   // } else throw new Error('Invalid item!')}
   Itemtypefield
-    .create(bodyfields, decoded.user_id)
+    .validItemtypeField(bodyfields, decoded.user_id)
+    .then(results => {
+      console.log('validation results: ', results)
+      return Itemtypefield.create(bodyfields, decoded.user_id)
+    })    
     .then(ids => {
       console.log('controller ids: ',ids)
-      res.json({"message" : "Itemtype created!", "id": ids})
+      res.json({"message" : "Itemtype field created!", "id": ids})
     })
     .catch(err => {
       console.log(err, err.message)
