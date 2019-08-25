@@ -65,6 +65,7 @@ function createItemtypeFields(req, res, next) {
   //       return 
   // } else throw new Error('Invalid item!')}
   Itemtypefield
+    //.create(bodyfields, decoded.user_id)
     .validItemtypeField(bodyfields, decoded.user_id)
     .then(results => {
       console.log('validation results: ', results)
