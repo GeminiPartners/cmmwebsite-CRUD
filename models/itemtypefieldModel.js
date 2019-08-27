@@ -13,7 +13,28 @@ module.exports = {
     
   },
   create: function (itemtypefields, add_user_id) {
-    return knex('itemtypefield').insert(itemtypefields, 'id')
+    return knex('itemtypefield')
+      .insert(itemtypefields, 'id')
+  },
+  update: function(itemtypefield, user_id) {
+    console.log('about to update: ', itemtypefield)
+    return knex('itemtypefield') 
+      .whereIn('fielditemtype_id', function() {
+        this.select('itemtype_id')
+            .from('marketItemtypeAuth')
+            .where('role', '>', '0')
+            .where({'user_id': user_id})
+            .where('fielditemtype_id', itemtypefield.fielditemtype_id)
+      })
+      .update({
+        'fieldname': itemtypefield.fieldname,
+        'fielddescription': itemtypefield.fielddescription,
+        'fieldorder': itemtypefield.fieldorder
+      })
+      .then(result => {
+        return result
+      })
+    
   },
   validItemtypeField: function (itemtypefields, user_id) {
     let countOfresults = []

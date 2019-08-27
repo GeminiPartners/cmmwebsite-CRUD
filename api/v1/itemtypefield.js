@@ -17,9 +17,9 @@ router.post('/create', (req, res, next) => {
   itemtypefield_controller.createItemtypeFields(req, res, next)
 });
 
-// router.patch('/:id', (req, res) => {
-//  item_controller.updateItem(req, res)
-// });
+router.patch('/:id', (req, res) => {
+ itemtypefield_controller.updateItemtypeField(req, res)
+});
 
 // router.post('/delete/:id', (req, res) => {
 //   item_controller.deleteItem(req, res)
