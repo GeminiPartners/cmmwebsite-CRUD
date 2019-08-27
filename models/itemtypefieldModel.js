@@ -58,19 +58,19 @@ module.exports = {
                 messages.push('Field name is invalid')
               };
               if (!values[1]) {
-                messages.push('This itemtype already has a field with this name')
+                messages.push(itemtypefield.fieldname.concat(': This itemtype already has a field with this name'))
               };
               if (!values[2]) {
-                messages.push('Field description is not valid')
+                messages.push(itemtypefield.fieldname.concat(': Field description is not valid'))
               };
               if (!values[3]) {
-                messages.push('Field itemtype id is not valid')
+                messages.push(itemtypefield.fieldname.concat(': Field itemtype id is not valid'))
               };
               if (!values[4]) {
-                messages.push('Field order is not valid')
+                messages.push(itemtypefield.fieldname.concat(': Field order is not valid'))
               };
               if (!values[5]) {
-                messages.push('Field data type is not valid')
+                messages.push(itemtypefield.fieldname.concat(': Field data type is not valid'))
               }
               return {
                 itemtypefield: itemtypefield,

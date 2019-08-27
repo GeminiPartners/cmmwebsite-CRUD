@@ -69,11 +69,30 @@ function createItemtypeFields(req, res, next) {
     .validItemtypeField(bodyfields, decoded.user_id)
     .then(results => {
       console.log('validation results: ', results)
-      return Itemtypefield.create(bodyfields, decoded.user_id)
+      let validItemtypefields = [];
+      let errormessages = [];
+      let allValid = true
+      results.forEach(element => {
+        if (element.valid) {
+          validItemtypefields.push(element.itemtypefield)
+        } else {
+          allValid = false
+          errormessages.push(element.messages)
+        }
+      });
+      const createItemtypefields = Itemtypefield.create(validItemtypefields, decoded.user_id)
+      return Promise.all([createItemtypefields, errormessages, allValid])
     })    
-    .then(ids => {
-      console.log('controller ids: ',ids)
-      res.json({"message" : "Itemtype field created!", "id": ids})
+    .then(results => {
+      console.log('valid promise all results: ', results)
+      if(results[2]){
+        results[1] = "Itemtype field(s) created"
+      }
+      res.json({
+        "allValid": results[2],
+        "message" : results[1], 
+        "ids": results[0]
+      })
     })
     .catch(err => {
       console.log(err, err.message)
