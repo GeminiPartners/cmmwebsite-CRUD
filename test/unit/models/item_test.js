@@ -524,3 +524,30 @@ describe('Unit: CustomField.addDateFieldInstance', function() {
       });  
   });     
 });
+
+describe('Unit: Item.updateItemWithFieldDetails', function() {
+  context('With valid item', function() {
+    const myItem = {
+      id: 2,
+      itemtype_id: 1,
+      fields: JSON.stringify([
+        {id: 1, fieldname: 'Title', fielddatatype: 0, fieldorder: 1, value: 'The Sensational She-Hulk'},
+        {id: 2, fieldname:'Issue', fielddatatype: 1, fieldorder: 1, value: 20},
+        {id: 3, fieldname:'Volume', fielddatatype: 1, fieldorder: 2, value: 1},
+        {id: 4, fieldname:'Cover Date', fielddatatype: 2, fieldorder: 3, value: '1989-03-31'}
+      ]),
+      owner_id: 1
+    };
+    const myItemtypefield =  {id: 2, fieldname: 'TitleUpd', fieldorder: 3}
+    const expectedResult = "Amazing Spider-Man 135";
+    it('should return items', function() {
+      return Item
+      .updateItemWithFieldDetails(myItem, myItemtypefield)
+      .then(results => {
+        console.log('results: ',results)
+        results.should.equal(expectedResult);
+        });    
+      });  
+    }); 
+
+});

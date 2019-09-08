@@ -106,7 +106,14 @@ function updateItemtypeField (req, res) {
       const decoded = Shared.decode(req.headers['auth_token']);
       console.log('body itemtypefield: ', req.body.itemtypefield)
       Itemtypefield
-      .validItemtypeField([req.body.itemtypefield], decoded.user_id)
+      .getOne(req.params.id)
+      .then(results => {
+        console.log('get one results', results)
+        let itemtypefield = req.body.itemtypefield
+        itemtypefield.id = parseInt(req.params.id)
+        itemtypefield.fielditemtype_id = results.fielditemtype_id
+        return Itemtypefield.validItemtypeField([itemtypefield], decoded.user_id)
+      })
       .then(results => {
         console.log('validation results: ', results)
         let validItemtypefields = [];
@@ -120,8 +127,8 @@ function updateItemtypeField (req, res) {
             errormessages.push(element.messages)
           }
         });
-        const createItemtypefields = Itemtypefield.update(validItemtypefields[0], decoded.user_id)
-        return Promise.all([createItemtypefields, errormessages, allValid])
+        const updateItemtypefields = Itemtypefield.update(validItemtypefields[0], decoded.user_id)
+        return Promise.all([updateItemtypefields, errormessages, allValid])
       })    
       .then(results => {
         console.log('valid promise all results: ', results)

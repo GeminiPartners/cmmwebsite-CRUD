@@ -19,6 +19,7 @@ module.exports = {
   update: function(itemtypefield, user_id) {
     console.log('about to update: ', itemtypefield)
     return knex('itemtypefield') 
+      .where('id', itemtypefield.id)
       .whereIn('fielditemtype_id', function() {
         this.select('itemtype_id')
             .from('marketItemtypeAuth')
@@ -45,12 +46,15 @@ module.exports = {
       itemtypefields.forEach(itemtypefield => {
         countOfresults.push(1)
         const itemtypefield_id = itemtypefield.id || 0;
+        console.log('itemtypefield_id: ', itemtypefield_id);
+        console.log('itemtypefields passed in: ', itemtypefield)
         const validFieldname = itemtypefield.fieldname.trim() != '';
         const fieldnameUnique = knex('itemtypefield')
           .where('fielditemtype_id', itemtypefield.fielditemtype_id)
           .where('fieldname', itemtypefield.fieldname)
           .where('id', '!=', itemtypefield_id)
           .then(result => {
+            console.log('result of id query: ', result)
             return result.length === 0
           });
         const validDescription = itemtypefield.fielddescription.trim() != '';     

@@ -189,6 +189,23 @@ module.exports = {
 
       })
   },
+  updateItemWithFieldDetails: function(item, itemtypefield) {
+    let fields = JSON.parse(item.fields);
+    console.log('fields: ', fields);
+    const index = fields.findIndex(element => element.id === itemtypefield.id);
+    const oldField = fields[index];
+    const newField = {
+      id: oldField.id, 
+      value: oldField.value, 
+      fieldname: itemtypefield.fieldname, 
+      fieldorder: itemtypefield.fieldorder,
+      fielddatatype: oldField.fielddatatype
+    };
+    fields.splice(index, 1, newField);
+    console.log('updateField: ', newField);
+    console.log('fields post-splice', fields)
+    return  knex('item').where({'id' : item.itemtype_id}).first();
+  },
   validItem: function(items, itemtypefields) {
     let itemsResults = []
     items.forEach(item => {
@@ -202,7 +219,7 @@ module.exports = {
       //is found in the custom fields.
       validFields = true
       
-      fields = JSON.parse(item.fields)
+      let fields = JSON.parse(item.fields)
 
       //If any errors are found in the fields array, they are appended to the fieldmsg variable.
       fieldMsg = "invalid fields"
