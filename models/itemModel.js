@@ -72,7 +72,6 @@ module.exports = {
       })
   },
   update: function(item, user_id) {
-    console.log('item: ',item);
     return knex('item').where({'id': item.id, 'owner_id': user_id}).update({
         'itemname': item.itemname,
         'itemdescription': item.itemdescription,
@@ -83,7 +82,6 @@ module.exports = {
     .then(id => {      
       let myitemfields = []
       myitemfields.push({id: id, fields: item.fields})
-      console.log('myitemfields: ', myitemfields)
       
       amqp.connect(connString, function(error0, connection) {
         if (error0) {
@@ -191,7 +189,6 @@ module.exports = {
   },
   updateItemWithFieldDetails: function(item, itemtypefield) {
     let fields = JSON.parse(item.fields);
-    console.log('fields: ', fields);
     const index = fields.findIndex(element => element.id === itemtypefield.id);
     const oldField = fields[index];
     const newField = {
@@ -202,9 +199,11 @@ module.exports = {
       fielddatatype: oldField.fielddatatype
     };
     fields.splice(index, 1, newField);
-    console.log('updateField: ', newField);
-    console.log('fields post-splice', fields)
-    return  knex('item').where({'id' : item.itemtype_id}).first();
+    return  knex('item')
+      .where({'id' : item.id})
+      .update({
+        fields: JSON.stringify(fields)
+      });
   },
   validItem: function(items, itemtypefields) {
     let itemsResults = []
