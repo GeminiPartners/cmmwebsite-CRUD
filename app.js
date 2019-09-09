@@ -103,19 +103,39 @@ amqp.connect(connString, function(error0, connection) {
               console.log('about to upd cust field ',msgObj.item_fields)
               Item
                 .updateCustomFields(msgObj.item_fields)
-              //   .then(results => {
-              //     return channel.ack(msg)
-              //   })
-              //   .catch(error =>{
-              //     console.log(error)
-              //   })
               channel.ack(msg)
               break;
-            case y:
-              // code block
-              break;
+            case 'updateItemField':
+              console.log('updateItemField msg received: ', msgObj.itemtypefield)
+              Item
+              .countAllOfType(msgObj.itemtypefield.fielditemtype_id)      
+              .then(result => {
+                const itemFieldUpdateLimit = 5
+                records = parseInt(result[0].count);
+                chunks = Math.ceil(records / itemFieldUpdateLimit)
+                console.log('results, records, chunks: ',result, records, chunks)
+                for (i = 0; i < chunks; i++) {
+                  const smsgObj = {action: 'itemFieldChunkUpdate'};
+                  const smsg = JSON.stringify(smsgObj)
+                  console.log('create s message', smsg)
+          
+                  channel.assertQueue(queue, {
+                      durable: true
+                  });
+                  channel.sendToQueue(queue, Buffer.from(smsg), {
+                    persistent: true
+                  });
+          
+                  console.log(" [x] Sent %s", smsg);
+                }
+                console.log('all items w type: ', result)
+                channel.ack(msg)
+              })    
+              
+              break; 
             default:
-              // code block
+              console.log(' [x] Action %s not defined', msgObj.action)
+              channel.ack(msg)
           }
         }, {
             noAck: false

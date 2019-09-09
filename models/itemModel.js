@@ -17,6 +17,12 @@ module.exports = {
   getOne: function (id) {
     return knex('item').where({'id' : id}).first();
   },
+  getAllOfType: function (itemtype_id) {
+    return knex('item').where({'itemtype_id' : itemtype_id});
+  },
+  countAllOfType: function (itemtype_id) {
+    return knex('item').where({'itemtype_id' : itemtype_id}).count({count: '*'});
+  },
   getOneToUpdate: function (id, user_id) {
     return knex('item').where({'id' : id, 'owner_id': user_id}).first();
   },
