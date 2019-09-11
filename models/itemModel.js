@@ -20,6 +20,12 @@ module.exports = {
   getAllOfType: function (itemtype_id) {
     return knex('item').where({'itemtype_id' : itemtype_id});
   },
+  getMultipleOffset: function (itemtype_id, limit, offset) {
+    return knex('item')
+      .where({'itemtype_id' : itemtype_id})
+      .limit(limit)
+      .offset(offset)
+  },
   countAllOfType: function (itemtype_id) {
     return knex('item').where({'itemtype_id' : itemtype_id}).count({count: '*'});
   },

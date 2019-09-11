@@ -98,37 +98,55 @@ amqp.connect(connString, function(error0, connection) {
         channel.consume(queue, function(msg) {
           let msgObj = JSON.parse(msg.content)
           console.log(" [x] Received %s", msgObj.action);
+
+          //The action property of the msgObj determines the action to be performed
           switch(msgObj.action) {
+            //loadItemFields is triggered wwhen the user adds one or more items
+            //It loads the items' custom fields from its "fields" property into the custom field tables
             case "loadItemFields":
               console.log('about to upd cust field ',msgObj.item_fields)
               Item
                 .updateCustomFields(msgObj.item_fields)
               channel.ack(msg)
               break;
+            //itemFieldChunkUpdate updates a single chunk of itemFields
+            case "itemFieldChunkUpdate":
+              console.log('the chunk:',msgObj.items)
+              // Item
+              //   .updateCustomFields(msgObj.item_fields)
+              channel.ack(msg)
+              break;
+            //updateItemField is triggered when the user updates the properties of an itemtype field
+            //It updates each item's "fields" property with the new field properties (name, order)
             case 'updateItemField':
               console.log('updateItemField msg received: ', msgObj.itemtypefield)
+              const itemtype_id = msgObj.itemtypefield.fielditemtype_id
               Item
-              .countAllOfType(msgObj.itemtypefield.fielditemtype_id)      
+              .countAllOfType(itemtype_id)      
               .then(result => {
-                const itemFieldUpdateLimit = 5
+                const itemFieldUpdateLimit = 3
                 records = parseInt(result[0].count);
                 chunks = Math.ceil(records / itemFieldUpdateLimit)
                 console.log('results, records, chunks: ',result, records, chunks)
+                          
+                channel.assertQueue(queue, {
+                  durable: true
+                });  
+                let messages = []
                 for (i = 0; i < chunks; i++) {
-                  const smsgObj = {action: 'itemFieldChunkUpdate'};
+                  const limit = chunks;
+                  const offset = chunks * i
+                  console.log('this is loop: ', i)
+                  const smsgObj = {action: 'itemFieldChunkUpdate', items: {itemtype_id: itemtype_id, limit: limit, offset: offset}, itemtypefield: msgObj.itemtypefield};
                   const smsg = JSON.stringify(smsgObj)
                   console.log('create s message', smsg)
-          
-                  channel.assertQueue(queue, {
-                      durable: true
-                  });
+               
                   channel.sendToQueue(queue, Buffer.from(smsg), {
                     persistent: true
                   });
-          
-                  console.log(" [x] Sent %s", smsg);
+
                 }
-                console.log('all items w type: ', result)
+
                 channel.ack(msg)
               })    
               
