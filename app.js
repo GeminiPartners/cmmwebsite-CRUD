@@ -112,9 +112,29 @@ amqp.connect(connString, function(error0, connection) {
             //itemFieldChunkUpdate updates a single chunk of itemFields
             case "itemFieldChunkUpdate":
               console.log('the chunk:',msgObj.items)
-              // Item
-              //   .updateCustomFields(msgObj.item_fields)
-              channel.ack(msg)
+              const myItemtype_id = msgObj.items.itemtype_id;
+              const myItemtypefield = msgObj.itemtypefield //JSON.stringify(msgObj.itemtypefield);
+              const offset = msgObj.items.offset;
+              const limit = msgObj.items.limit;
+              Item
+                .getMultipleOffset(myItemtype_id, limit, offset)
+                .then(result => {
+                  let itemUpdates = []
+                  console.log('get multiple offset result: ', result)
+                  result.forEach(item => {
+                    // console.log('for each item: ', item)
+                    const myItem = item
+                    itemUpdates.push(Item.updateItemWithFieldDetails(myItem, myItemtypefield))
+                  })
+                  channel.ack(msg)
+                  return Promise.all(itemUpdates)
+                  
+                })
+                .then(result => {
+                  console.log('result of promise all: ', result)
+                  
+                })
+              
               break;
             //updateItemField is triggered when the user updates the properties of an itemtype field
             //It updates each item's "fields" property with the new field properties (name, order)

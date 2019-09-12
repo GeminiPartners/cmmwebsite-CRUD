@@ -200,22 +200,29 @@ module.exports = {
       })
   },
   updateItemWithFieldDetails: function(item, itemtypefield) {
-    let fields = JSON.parse(item.fields);
-    const index = fields.findIndex(element => element.id === itemtypefield.id);
-    const oldField = fields[index];
-    const newField = {
-      id: oldField.id, 
-      value: oldField.value, 
-      fieldname: itemtypefield.fieldname, 
-      fieldorder: itemtypefield.fieldorder,
-      fielddatatype: oldField.fielddatatype
-    };
-    fields.splice(index, 1, newField);
-    return  knex('item')
-      .where({'id' : item.id})
-      .update({
-        fields: JSON.stringify(fields)
-      });
+    let fields = item.fields;
+    if (fields) {
+      const index = fields.findIndex(element => element.id === itemtypefield.id);
+      const oldField = fields[index];
+      const newField = {
+        id: oldField.id, 
+        value: oldField.value, 
+        fieldname: itemtypefield.fieldname, 
+        fieldorder: itemtypefield.fieldorder,
+        fielddatatype: oldField.fielddatatype
+      };
+      console.log('update new field: ', newField, ', item id: ', item.id)
+      fields.splice(index, 1, newField);
+      return  knex('item')
+        .where({'id' : item.id})
+        .update({
+          fields: JSON.stringify(fields)
+        });
+    } else {
+      return true
+    }
+    
+    
   },
   validItem: function(items, itemtypefields) {
     let itemsResults = []
