@@ -76,7 +76,7 @@ app.use(function(err, req, res, next) {
 
 //Listen for message queue jobs
 const amqp = require('amqplib/callback_api');
-const connString = 'amqp://hcktxhys:nfHt2kNtc8dImNkmrMJSYEuI9Noaw8ug@cat.rmq.cloudamqp.com/hcktxhys'
+const connString = process.env.CONN_STRING
 
 amqp.connect(connString, function(error0, connection) {
     if (error0) {
@@ -144,7 +144,7 @@ amqp.connect(connString, function(error0, connection) {
               Item
               .countAllOfType(itemtype_id)      
               .then(result => {
-                const itemFieldUpdateLimit = 3
+                const itemFieldUpdateLimit = process.env.ITEMFIELD_UPDATE_LIMIT
                 records = parseInt(result[0].count);
                 chunks = Math.ceil(records / itemFieldUpdateLimit)
                 console.log('results, records, chunks: ',result, records, chunks)
@@ -154,8 +154,8 @@ amqp.connect(connString, function(error0, connection) {
                 });  
                 let messages = []
                 for (i = 0; i < chunks; i++) {
-                  const limit = chunks;
-                  const offset = chunks * i
+                  const limit = itemFieldUpdateLimit;
+                  const offset = itemFieldUpdateLimit * i
                   console.log('this is loop: ', i)
                   const smsgObj = {action: 'itemFieldChunkUpdate', items: {itemtype_id: itemtype_id, limit: limit, offset: offset}, itemtypefield: msgObj.itemtypefield};
                   const smsg = JSON.stringify(smsgObj)

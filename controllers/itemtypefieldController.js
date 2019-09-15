@@ -101,7 +101,7 @@ function createItemtypeFields(req, res, next) {
   };
 
 function updateItemtypeField (req, res) {
-  if (true) {
+  if (true) {  //Implement check on ID
       Shared.allowOrigin(res, req);
       const decoded = Shared.decode(req.headers['auth_token']);
       console.log('body itemtypefield: ', req.body.itemtypefield)
@@ -127,8 +127,13 @@ function updateItemtypeField (req, res) {
             errormessages.push(element.messages)
           }
         });
-        const updateItemtypefields = Itemtypefield.update(validItemtypefields[0], decoded.user_id)
-        return Promise.all([updateItemtypefields, errormessages, allValid])
+        if (allValid) {
+          const updateItemtypefields = Itemtypefield.update(validItemtypefields[0], decoded.user_id)
+          return Promise.all([updateItemtypefields, errormessages, allValid])
+        } else {
+          throw new Error(errormessages);
+        }
+
       })    
       .then(results => {
         console.log('valid promise all results: ', results)
@@ -169,45 +174,45 @@ function deleteItem (req, res) {
   }
 };
 
-function addItemToCategories (req, res) {
-  if (!isNaN(req.params.id)) {
-    Shared.allowOrigin(res, req);
-    const decoded = Shared.decode(req.headers['auth_token']);    
-    const add_item_categories = req.body.item_categories;
-    console.log('these are our ids: ', add_item_categories);
+// function addItemToCategories (req, res) {
+//   if (!isNaN(req.params.id)) {
+//     Shared.allowOrigin(res, req);
+//     const decoded = Shared.decode(req.headers['auth_token']);    
+//     const add_item_categories = req.body.item_categories;
+//     console.log('these are our ids: ', add_item_categories);
   
-    Item_category.getByUser(decoded.user_id)
-    .then(item_categories => {
-      console.log('item_categories: ',item_categories, 'add_item_categories: ', add_item_categories);
-      return validCategories(item_categories, add_item_categories)
-    })
-    .then(categories_are_valid => {
-      if (categories_are_valid) {
-        return Item.getCategories(req.params.id);
-      } else throw new Error('Invalid category!');  
-    })
-    .then(existingCategories => {
-      console.log('our existing categories: ', existingCategories, 'add_item_categories: ', add_item_categories); 
-      var noDuplicateCategories = true;
-      for(i in existingCategories){
-        if (add_item_categories.includes(existingCategories[i].item_category_id)) {
-          noDuplicateCategories = false
-        };
-      };
-        if (noDuplicateCategories) {
-          return Item.addToItem_Categories(req.params.id, req.body.item_categories);
-          console.log('item in categories: ',item)
-        } else throw new Error('Item already added to category!');  })
-    .then(ids => {
-      res.json({ids, "message" : "Item added to categories!"})
-    })
-    .catch(err => {
-      console.log(err, err.message)
-      resError(res, 404, err.message);
-    });
+//     Item_category.getByUser(decoded.user_id)
+//     .then(item_categories => {
+//       console.log('item_categories: ',item_categories, 'add_item_categories: ', add_item_categories);
+//       return validCategories(item_categories, add_item_categories)
+//     })
+//     .then(categories_are_valid => {
+//       if (categories_are_valid) {
+//         return Item.getCategories(req.params.id);
+//       } else throw new Error('Invalid category!');  
+//     })
+//     .then(existingCategories => {
+//       console.log('our existing categories: ', existingCategories, 'add_item_categories: ', add_item_categories); 
+//       var noDuplicateCategories = true;
+//       for(i in existingCategories){
+//         if (add_item_categories.includes(existingCategories[i].item_category_id)) {
+//           noDuplicateCategories = false
+//         };
+//       };
+//         if (noDuplicateCategories) {
+//           return Item.addToItem_Categories(req.params.id, req.body.item_categories);
+//           console.log('item in categories: ',item)
+//         } else throw new Error('Item already added to category!');  })
+//     .then(ids => {
+//       res.json({ids, "message" : "Item added to categories!"})
+//     })
+//     .catch(err => {
+//       console.log(err, err.message)
+//       resError(res, 404, err.message);
+//     });
       
-  }
-};
+//   }
+// };
 
 function resError(res, statusCode, message) {
   res.status(statusCode);
