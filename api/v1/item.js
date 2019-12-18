@@ -1,15 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const item_controller = require('../../controllers/itemController')
-// const Item = require('../db/item');
-// const Item_category = require('../db/item_category')
-// const Shared = require('../shared');
-
-router.get('/:id', (req, res) => {
-  item_controller.getItem(req,res)
-});
+const item_controller = require('./controllers/itemController');
 
 router.get('/user', (req, res) => {
+  console.log("right so far")
+  item_controller.getItemsByUser(req,res)
+});
+
+router.get('/:id', (req, res) => {
+  console.log("this one works")
   item_controller.getItem(req,res)
 });
 

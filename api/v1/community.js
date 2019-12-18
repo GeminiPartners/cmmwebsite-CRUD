@@ -1,10 +1,5 @@
 const express = require('express');
-const router = express.Router();
-// const User = require('../db/user');
-// const Item_category = require('../db/item_category');
-// const Community = require('../db/community');
-// const Item = require('../db/item');
-// const Shared = require('../shared');
+const router = express.Router(); 
 const community_controller = require('../../controllers/communityController')
 
 router.get('/:id', (req, res) => {  

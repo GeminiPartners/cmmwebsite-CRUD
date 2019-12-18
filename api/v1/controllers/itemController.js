@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const Item = require('../models/itemModel');
-const Item_category = require('../db/item_category')
-const Itemtypefield = require('../models/itemtypefieldModel')
+const Item = require('../../../models/itemModel');
+const Itemtypefield = require('../../../models/itemtypefieldModel')
 const Shared = require('../shared');
 
 function getItem(req, res) {
@@ -29,6 +28,7 @@ function getItem(req, res) {
     resError(res, 500, "Invalid ID");
   }
 };
+
 
 function getItemsByUser(req, res) {
   const decoded = Shared.decode(req.headers['auth_token']);
@@ -284,6 +284,7 @@ function resError(res, statusCode, message) {
 
 module.exports = {
     getItem,
+    getItemsByUser,
     validCategories,
     validItem,
     uniq,

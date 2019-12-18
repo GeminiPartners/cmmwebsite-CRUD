@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const itemtype_controller = require('../../controllers/itemtypeController')
+const itemtype_controller = require('./controllers/itemtypeController')
 // const Item = require('../db/item');
 // const Item_category = require('../db/item_category')
 // const Shared = require('../shared');
