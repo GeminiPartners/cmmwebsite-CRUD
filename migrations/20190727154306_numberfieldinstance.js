@@ -1,6 +1,6 @@
 exports.up = function(knex, Promise) {
     return knex.schema.createTable('numberfieldinstance', table => {
-        table.increments();
+        table.uuid('id').notNullable().primary();
         table.integer('numberfield_id').notNullable().references('itemtypefield.id').unsigned().onDelete('cascade');;
         table.decimal('numberfieldvalue').notNullable();
         table.integer('numberfielditem_id').notNullable().references('item.id').unsigned().onDelete('cascade');;

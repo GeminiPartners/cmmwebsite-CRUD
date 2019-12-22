@@ -1,6 +1,6 @@
 exports.up = function(knex, Promise) {
     return knex.schema.createTable('datefieldinstance', table => {
-        table.increments();
+        table.uuid('id').notNullable().primary();
         table.integer('datefield_id').notNullable().references('itemtypefield.id').unsigned().onDelete('cascade');;
         table.date('datefieldvalue').notNullable();
         table.integer('datefielditem_id').notNullable().references('item.id').unsigned().onDelete('cascade');;

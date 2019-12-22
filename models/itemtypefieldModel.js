@@ -1,6 +1,7 @@
 const knex = require('./connection');
 const amqp = require('amqplib/callback_api');
 const connString = 'amqp://hcktxhys:nfHt2kNtc8dImNkmrMJSYEuI9Noaw8ug@cat.rmq.cloudamqp.com/hcktxhys'
+const Shared = require('../shared')
 
 
 module.exports = {    
@@ -16,6 +17,10 @@ module.exports = {
     
   },
   create: function (itemtypefields, add_user_id) {
+    itemtypefields.forEach(itemtypefield => {
+      itemtypefield.id = Shared.UUID()
+      console.log('my fields: ', itemtypefields)
+    })
     return knex('itemtypefield')
       .insert(itemtypefields, 'id')
   },

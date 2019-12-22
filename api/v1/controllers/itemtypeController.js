@@ -115,7 +115,7 @@ function deleteItemtype (req, res) {
       console.log('delete results: ', results)
       if (results === req.body.ids.length) {
         res.json({
-          message: 'item deleted'
+          message: 'Itemtype(s) deleted'
         });
       } else if (results > 0) {
         res.json({

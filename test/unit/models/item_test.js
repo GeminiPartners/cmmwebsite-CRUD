@@ -547,6 +547,7 @@ describe('Unit: Item.updateItemWithFieldDetails', function() {
       .create([myItem])
       .then(result => {
         myItem.id = result.ids[0]
+        myItem.fields = JSON.parse(myItem.fields)
         return Item.updateItemWithFieldDetails(myItem, myItemtypefield)
       })      
       .then(results => {

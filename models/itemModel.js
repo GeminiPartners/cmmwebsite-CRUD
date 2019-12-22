@@ -156,6 +156,8 @@ module.exports = {
           const fields = JSON.parse(item.fields) 
           fields.forEach(field => {
             item_id = item.id
+            field.id = require('../shared').UUID()
+            console.log('this is the field: ', field)
             switch(field.fielddatatype) {
               case 0:
                 console.log('Text field Name: ', field.fieldname, ' value: ', field.value) 
@@ -200,6 +202,9 @@ module.exports = {
       })
   },
   updateItemWithFieldDetails: function(item, itemtypefield) {
+    console.log('itemtypefield definition: ', itemtypefield)
+    console.log('item definition: ', item)
+    //Used to update item field descriptions with the itemtypefield definition is updated
     let fields = item.fields;
     if (fields) {
       const index = fields.findIndex(element => element.id === itemtypefield.id);

@@ -77,28 +77,28 @@ describe('Unit: Itemtype.validItemtype', function() {
 
 describe('Unit: Itemtype.create', function() {
   const itemtype = {
-    itemtypename: "New Type",
+    itemtypename: "New Type3",
     itemtypedescription: "A new item type",
     itemtypeorder: 5,
     itemtypemarket: 1
   }
-  after(function() {
-    return Itemtype
-      .getOneByName(itemtype.itemtypename)
-      .then(result => {
-        console.log('result of getonebyname: ', result)
-        return Itemtype.delete([result.id], 1)
-      })
-      .then(result => {
-        console.log('result of delete: ', result)
-      })
-  });
+  // after(function() {
+  //   return Itemtype
+  //     .getOneByName(itemtype.itemtypename)
+  //     .then(result => {
+  //       console.log('result of getonebyname: ', result)
+  //       return Itemtype.delete([result.id], 1)
+  //     })
+  //     .then(result => {
+  //       console.log('result of delete: ', result)
+  //     })
+  // });
   context('With valid info', function() {
     const expectedResult = "Comics";
 
     it('should return an integer', function() {
       return Itemtype
-        .create(itemtype)
+        .create(itemtype, 1)
         .then(result => {
           console.log(result)
           result.should.be.an.integer;
