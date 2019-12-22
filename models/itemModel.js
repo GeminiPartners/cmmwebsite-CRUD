@@ -4,6 +4,7 @@ const connString = 'amqp://hcktxhys:nfHt2kNtc8dImNkmrMJSYEuI9Noaw8ug@cat.rmq.clo
 const async = require('async')
 const CustomFields = require('./customfieldModel')
 const Itemtypefield = require('./itemtypefieldModel')
+const Shared = require('../shared')
 
 module.exports = { 
 
@@ -156,7 +157,7 @@ module.exports = {
           const fields = JSON.parse(item.fields) 
           fields.forEach(field => {
             item_id = item.id
-            field.id = require('../shared').UUID()
+            const instanceID = Shared.UUID()
             console.log('this is the field: ', field)
             switch(field.fielddatatype) {
               case 0:
@@ -164,7 +165,8 @@ module.exports = {
                 textField = {
                   textfield_id: field.id,
                   textfieldvalue: field.value,
-                  textfielditem_id: item_id
+                  textfielditem_id: item_id,
+                  id: instanceID
                 }
                 textFields.push(textField)
                 console.log('text field example: ', item)
@@ -174,7 +176,8 @@ module.exports = {
                 numberField = {
                   numberfield_id: field.id,
                   numberfieldvalue: field.value,
-                  numberfielditem_id: item_id
+                  numberfielditem_id: item_id,
+                  id: instanceID
                 }
                 numberFields.push(numberField)
                 break;
@@ -183,7 +186,8 @@ module.exports = {
                 dateField = {
                   datefield_id: field.id,
                   datefieldvalue: field.value,
-                  datefielditem_id: item_id
+                  datefielditem_id: item_id,
+                  id: instanceID
                 }
                 dateFields.push(dateField)
               default:

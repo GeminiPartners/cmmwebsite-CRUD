@@ -17,10 +17,7 @@ module.exports = {
     
   },
   create: function (itemtypefields, add_user_id) {
-    itemtypefields.forEach(itemtypefield => {
-      itemtypefield.id = Shared.UUID()
-      console.log('my fields: ', itemtypefields)
-    })
+
     return knex('itemtypefield')
       .insert(itemtypefields, 'id')
   },
