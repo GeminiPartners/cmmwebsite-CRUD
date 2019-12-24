@@ -1,4 +1,5 @@
 const knex = require('./connection');
+const Shared = require('../shared')
 
 module.exports = {
     deleteFieldInstances: function(ids) {  
@@ -14,16 +15,16 @@ module.exports = {
                 return results
             })
     },
-    addTextFieldInstance: function(fields) {        
-        
-        return knex('textfieldinstance').insert(fields, 'id')
+    addTextFieldInstance: function(field) {    
+        field.id = Shared.UUID();
+        return knex('textfieldinstance').insert(field, 'id')
     },
-    addNumberFieldInstance: function(fields) {
-
-        return knex('numberfieldinstance').insert(fields, 'id')
+    addNumberFieldInstance: function(field) {
+        field.id = Shared.UUID();
+        return knex('numberfieldinstance').insert(field, 'id')
     },
-    addDateFieldInstance: function(fields) {
- 
-        return knex('datefieldinstance').insert(fields, 'id')
+    addDateFieldInstance: function(field) {
+        field.id = Shared.UUID();
+        return knex('datefieldinstance').insert(field, 'id')
     }
 }

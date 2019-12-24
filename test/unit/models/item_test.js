@@ -4,10 +4,12 @@ const CustomField = require('../../../models/customfieldModel');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const chaiInteger = require('chai-integer');
+const Shared = require('../../../shared')
 
 // set up the middleware
 chai.use(chaiAsPromised);
 chai.use(chaiInteger);
+chai.use(require('chai-uuid'));
 var should = require('chai').should() 
 
 
@@ -414,14 +416,17 @@ describe('Unit: CustomField.deleteFieldInstances', function() {
       owner_id: 1 
   }];
   const newTextField = {
+    id: Shared.UUID(),
     textfield_id: 1,
     textfieldvalue: "My test2"
   };
   const newNumberField = {
+    id: Shared.UUID(),
     numberfield_id: 2,
     numberfieldvalue: 778
   };
   const newDateField = {
+    id: Shared.UUID(),
     datefield_id: 4,
     datefieldvalue: "2018-02-01"
   };
@@ -479,7 +484,7 @@ describe('Unit: CustomField.addTextFieldInstance', function() {
       .addTextFieldInstance(newTextField)
       .then(ids => {
         console.log('test results of text field add: ', ids)
-        ids[0].should.be.an.integer()        
+        ids[0].should.be.a.uuid()       
         });    
       });  
   });     
@@ -499,7 +504,7 @@ describe('Unit: CustomField.addNumberFieldInstance', function() {
       .addNumberFieldInstance(newNumberField)
       .then(ids => {
         console.log('test results of number add: ', ids)
-        ids[0].should.be.an.integer()        
+        ids[0].should.be.a.uuid()        
         });    
       });  
   });     
@@ -519,7 +524,7 @@ describe('Unit: CustomField.addDateFieldInstance', function() {
       .addDateFieldInstance(newDateField)
       .then(ids => {
         console.log('test results of date field: ', ids)
-        ids[0].should.be.an.integer()        
+        ids[0].should.be.a.uuid()        
         });    
       });  
   });     
