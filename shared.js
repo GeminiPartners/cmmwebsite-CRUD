@@ -1,4 +1,6 @@
 require('dotenv-safe').config();
+const UuidEncoder= require('uuid-encoder')
+const encoder = new UuidEncoder('base64url')
 const jwt = require('jwt-simple');
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -53,12 +55,22 @@ function UUID(
           /[018]/g,    // zeroes, ones, and eights with
           UUID            // random hex digits
         )
-  }
+  };
+
+  function encodeID(id) {
+    return encoder.encode(id)
+  };
+
+  function decodeID(hash) {
+    return encoder.decode(hash)
+  };
 
 module.exports = {
     allowOrigin,
     decode,
     decodeToken,
+    encodeID,
+    decodeID,
     whitelistCheck,
     UUID
 }

@@ -29,4 +29,29 @@ describe('Shared.whitelistCheck', function() {
     });  
 });
 
+describe('Shared.EncodeUUID', function() {
+    context('Valid UID', function() {
+        const myUUID = '1048370e-d128-44e4-811e-384c7c461914';
+        const expectedResult = 'GI3SEqIX4v84UE4nyHXaK';
+        console.log('myUUID', myUUID)
+        console.log('base64: ', Shared.encodeID(myUUID))
+        it('should return the UUID encoded as base64', function() {
+            Shared.encodeID(myUUID).should.equal(expectedResult)
+        });  
+    });  
+
+});
+
+describe('Shared.DecodeUUID', function() {
+    context('Valid UID', function() {
+        const myHash = 'GI3SEqIX4v84UE4nyHXaK';
+        const expectedResult = '1048370e-d128-44e4-811e-384c7c461914';
+        it('should return the decoded UUID', function() {
+            Shared.decodeID(myHash).should.equal(expectedResult)
+        });  
+    });  
+
+});
+
+
 
